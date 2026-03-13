@@ -22,7 +22,7 @@ export default function CmsDocumentsTab() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [editing, setEditing] = useState<Document | null>(null);
-  const [form, setForm] = useState({ title: '', description: '', category: 'general' as DocumentCategory, author: '', fileType: 'pdf' as const });
+  const [form, setForm] = useState({ title: '', description: '', category: 'general' as DocumentCategory, author: '', fileType: 'pdf' as 'pdf' | 'doc' | 'image' });
 
   const active = documents.filter((d) => !d.archived);
   const filtered = active.filter((d) => d.title.toLowerCase().includes(search.toLowerCase()));

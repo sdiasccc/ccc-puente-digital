@@ -1,47 +1,25 @@
+import { useAppStore } from '@/stores/useAppStore';
 import PageHeader from '@/components/shared/PageHeader';
 import InfoCard from '@/components/shared/InfoCard';
-import { Gift, GraduationCap, Heart, Dumbbell } from 'lucide-react';
+import { Heart, GraduationCap, Dumbbell, Gift } from 'lucide-react';
 
-const benefits = [
-  {
-    title: 'Seguro médico privado',
-    description: 'Cobertura médica completa con la posibilidad de incluir familiares directos a precio reducido.',
-    icon: Heart,
-  },
-  {
-    title: 'Formación continua',
-    description: 'Descuentos de hasta el 50% en másteres, cursos de idiomas y certificaciones profesionales.',
-    icon: GraduationCap,
-  },
-  {
-    title: 'Programa de bienestar',
-    description: 'Acceso a gimnasio con tarifa corporativa, sesiones de mindfulness y programa de salud mental.',
-    icon: Dumbbell,
-  },
-  {
-    title: 'Retribución flexible',
-    description: 'Ticket restaurante, transporte, guardería y seguro médico con ventajas fiscales.',
-    icon: Gift,
-  },
-];
+const iconMap: Record<string, any> = { Heart, GraduationCap, Dumbbell, Gift };
 
 export default function BeneficiosPage() {
+  const { benefits } = useAppStore();
+  const active = benefits.filter((b) => !b.archived);
+
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Beneficios sociales"
-        description="Conoce los beneficios que CCC ofrece a sus empleados"
-      />
+      <PageHeader title="Beneficios sociales" description="Conoce los beneficios que CCC ofrece a sus empleados" />
 
       <div className="grid gap-4 md:grid-cols-2">
-        {benefits.map((b, i) => (
-          <InfoCard
-            key={i}
-            title={b.title}
-            description={b.description}
-            icon={<b.icon className="h-5 w-5" />}
-          />
-        ))}
+        {active.map((b) => {
+          const Icon = iconMap[b.icon] || Gift;
+          return (
+            <InfoCard key={b.id} title={b.title} description={b.description} icon={<Icon className="h-5 w-5" />} />
+          );
+        })}
       </div>
 
       <div className="rounded-xl border bg-card p-6 card-shadow">
