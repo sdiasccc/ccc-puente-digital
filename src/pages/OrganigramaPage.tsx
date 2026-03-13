@@ -1,55 +1,21 @@
+import { useAppStore } from '@/stores/useAppStore';
 import PageHeader from '@/components/shared/PageHeader';
-import { Network, MapPin } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import type { OrgNode } from '@/types';
 
-interface OrgNode {
-  name: string;
-  role: string;
-  department: string;
-  office: string;
-  reports?: OrgNode[];
+function buildTree(nodes: OrgNode[]): (OrgNode & { children: any[] })[] {
+  const map: Record<string, OrgNode & { children: any[] }> = {};
+  const roots: (OrgNode & { children: any[] })[] = [];
+  nodes.forEach((n) => { map[n.id] = { ...n, children: [] }; });
+  nodes.forEach((n) => {
+    if (n.parentId && map[n.parentId]) map[n.parentId].children.push(map[n.id]);
+    else roots.push(map[n.id]);
+  });
+  return roots;
 }
 
-const orgData: OrgNode = {
-  name: 'Ana Martínez',
-  role: 'CEO',
-  department: 'Dirección General',
-  office: 'Madrid',
-  reports: [
-    {
-      name: 'Pedro López',
-      role: 'Director de Tecnología',
-      department: 'Tecnología',
-      office: 'Madrid',
-      reports: [
-        { name: 'Carlos García', role: 'Lead Developer', department: 'Tecnología', office: 'Madrid' },
-        { name: 'Laura Sánchez', role: 'Diseñadora UX', department: 'Tecnología', office: 'Barcelona' },
-      ],
-    },
-    {
-      name: 'María Fernández',
-      role: 'Directora de RRHH',
-      department: 'RRHH',
-      office: 'Madrid',
-      reports: [
-        { name: 'Javier Ruiz', role: 'Técnico de RRHH', department: 'RRHH', office: 'Madrid' },
-        { name: 'Elena Torres', role: 'Formación', department: 'RRHH', office: 'Sevilla' },
-      ],
-    },
-    {
-      name: 'Luis Moreno',
-      role: 'Director Comercial',
-      department: 'Comercial',
-      office: 'Barcelona',
-      reports: [
-        { name: 'Sara Jiménez', role: 'Account Manager', department: 'Comercial', office: 'Barcelona' },
-        { name: 'Diego Navarro', role: 'Sales Rep', department: 'Comercial', office: 'Valencia' },
-      ],
-    },
-  ],
-};
-
-function OrgCard({ node }: { node: OrgNode }) {
+function OrgCard({ node }: { node: OrgNode & { children: any[] } }) {
   const initials = node.name.split(' ').map(w => w[0]).join('').slice(0, 2);
   return (
     <div className="flex flex-col items-center">
@@ -64,12 +30,12 @@ function OrgCard({ node }: { node: OrgNode }) {
           <MapPin className="h-3 w-3" /> {node.office}
         </div>
       </div>
-      {node.reports && node.reports.length > 0 && (
+      {node.children.length > 0 && (
         <>
           <div className="w-px h-6 bg-border" />
           <div className="flex gap-4">
-            {node.reports.map((child, i) => (
-              <div key={i} className="relative flex flex-col items-center">
+            {node.children.map((child: any) => (
+              <div key={child.id} className="relative flex flex-col items-center">
                 <div className="w-px h-6 bg-border" />
                 <OrgCard node={child} />
               </div>
@@ -82,15 +48,18 @@ function OrgCard({ node }: { node: OrgNode }) {
 }
 
 export default function OrganigramaPage() {
+  const { orgNodes } = useAppStore();
+  const active = orgNodes.filter((n) => !n.archived);
+  const tree = buildTree(active);
+
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Organigrama"
-        description="Estructura organizativa de CCC"
-      />
+      <PageHeader title="Organigrama" description="Estructura organizativa de CCC" />
       <div className="overflow-x-auto rounded-xl border bg-card p-8 card-shadow">
-        <div className="flex justify-center min-w-[800px]">
-          <OrgCard node={orgData} />
+        <div className="flex justify-center min-w-[800px] gap-8">
+          {tree.map((root) => (
+            <OrgCard key={root.id} node={root} />
+          ))}
         </div>
       </div>
     </div>
