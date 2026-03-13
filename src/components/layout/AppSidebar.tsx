@@ -17,6 +17,7 @@ const navItems = [
   { label: 'Inicio', icon: Home, path: '/' },
   { label: 'Payfit', icon: Clock, path: '/payfit' },
   { label: 'Comunicaciones', icon: Megaphone, path: '/comunicaciones' },
+  { label: 'Documentos', icon: FileText, path: '/documentos' },
   { label: 'Cursos obligatorios', icon: GraduationCap, path: '/cursos' },
   { label: 'Seguridad IT', icon: Shield, path: '/seguridad-it' },
   { label: 'Póliza de seguros', icon: Heart, path: '/poliza-seguros' },
