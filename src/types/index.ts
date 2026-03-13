@@ -1,0 +1,114 @@
+// ============ User & Auth ============
+export type UserRole = 'admin' | 'hr_team' | 'employee';
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  department: string;
+  office: string;
+  role: UserRole;
+  avatar?: string;
+  active: boolean;
+}
+
+// ============ Notifications ============
+export type NotificationType = 'info' | 'warning' | 'success';
+
+export interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  date: string;
+  read: boolean;
+  type: NotificationType;
+}
+
+// ============ Communications ============
+export interface Communication {
+  id: string;
+  title: string;
+  content: string;
+  date: string;
+  author: string;
+  attachments?: string[];
+  pinned?: boolean;
+  archived?: boolean;
+}
+
+// ============ Documents ============
+export type DocumentCategory = 'contrato' | 'nomina' | 'politica' | 'formacion' | 'general';
+
+export interface Document {
+  id: string;
+  title: string;
+  description: string;
+  category: DocumentCategory;
+  uploadDate: string;
+  author: string;
+  fileType: 'pdf' | 'doc' | 'image';
+  fileUrl?: string;
+  version: number;
+  downloads: number;
+  roles: UserRole[]; // who can access
+  archived?: boolean;
+}
+
+// ============ Courses ============
+export interface Course {
+  id: string;
+  title: string;
+  description: string;
+  link: string;
+  duration: string;
+  mandatory: boolean;
+  archived?: boolean;
+}
+
+// ============ FAQ ============
+export interface FAQItem {
+  id: string;
+  question: string;
+  answer: string;
+  category?: string;
+  archived?: boolean;
+}
+
+// ============ Benefits ============
+export interface Benefit {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  archived?: boolean;
+}
+
+// ============ Org Chart ============
+export interface OrgNode {
+  id: string;
+  name: string;
+  role: string;
+  department: string;
+  office: string;
+  parentId?: string;
+  archived?: boolean;
+}
+
+// ============ Homepage Highlights ============
+export interface Highlight {
+  id: string;
+  title: string;
+  description: string;
+  link?: string;
+  icon?: string;
+  order: number;
+  active: boolean;
+}
+
+// ============ Utility ============
+export interface CrudActions<T> {
+  create: (item: Omit<T, 'id'>) => void;
+  update: (id: string, item: Partial<T>) => void;
+  archive: (id: string) => void;
+  remove: (id: string) => void;
+}
