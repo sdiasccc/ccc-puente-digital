@@ -50,8 +50,8 @@ export default function AppHeader() {
       <div className="flex items-center gap-2">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="relative rounded-md p-2 hover:bg-muted">
-              <Bell className="h-5 w-5 text-foreground" />
+            <button className="relative rounded-md p-2 hover:bg-sidebar-accent">
+              <Bell className="h-5 w-5 text-secondary-foreground" />
               {unreadCount > 0 && (
                 <Badge className="absolute -right-0.5 -top-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-primary px-1 text-[10px] text-primary-foreground">
                   {unreadCount}
