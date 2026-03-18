@@ -75,17 +75,17 @@ export default function AppHeader() {
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="flex items-center gap-2 rounded-lg p-1.5 hover:bg-muted">
+            <button className="flex items-center gap-2 rounded-lg p-1.5 hover:bg-sidebar-accent">
               <Avatar className="h-8 w-8">
                 <AvatarFallback className="bg-primary text-primary-foreground text-xs font-semibold">
                   {initials}
                 </AvatarFallback>
               </Avatar>
               <div className="hidden text-left md:block">
-                <p className="text-sm font-medium leading-none text-foreground">{currentUser.name}</p>
-                <p className="text-xs text-muted-foreground">{currentUser.department}</p>
+                <p className="text-sm font-medium leading-none text-secondary-foreground">{currentUser.name}</p>
+                <p className="text-xs text-sidebar-foreground/60">{currentUser.department}</p>
               </div>
-              <ChevronDown className="hidden h-4 w-4 text-muted-foreground md:block" />
+              <ChevronDown className="hidden h-4 w-4 text-sidebar-foreground/60 md:block" />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
