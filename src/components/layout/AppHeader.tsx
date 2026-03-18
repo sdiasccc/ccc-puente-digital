@@ -26,14 +26,14 @@ export default function AppHeader() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 flex h-16 items-center justify-between border-b border-sidebar-border bg-secondary px-4">
       <div className="flex items-center gap-3">
-        <button onClick={toggleSidebar} className="rounded-md p-2 hover:bg-muted lg:hidden">
-          <Menu className="h-5 w-5 text-foreground" />
+        <button onClick={toggleSidebar} className="rounded-md p-2 hover:bg-sidebar-accent lg:hidden">
+          <Menu className="h-5 w-5 text-secondary-foreground" />
         </button>
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/')}>
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
             <span className="text-sm font-bold text-primary-foreground">CCC</span>
           </div>
-          <span className="hidden text-lg font-bold text-secondary sm:block">Portal CCC</span>
+          <span className="hidden text-lg font-bold text-secondary-foreground sm:block">Portal CCC</span>
         </div>
       </div>
 
