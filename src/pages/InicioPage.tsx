@@ -1,164 +1,192 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '@/stores/useAppStore';
-import PageHeader from '@/components/shared/PageHeader';
-import StatCard from '@/components/shared/StatCard';
-import InfoCard from '@/components/shared/InfoCard';
-import DocumentCard from '@/components/shared/DocumentCard';
-import { Badge } from '@/components/ui/badge';
-import { Bell, BookOpen, Clock, FileText, Megaphone, Shield, Star, ArrowRight, Download } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Clock, Layers, BookOpen, Shield, Gift, Network, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-export default function InicioPage() {
-  const { currentUser, notifications, communications, documents, highlights, courses } = useAppStore();
-  const navigate = useNavigate();
-  const unreadNotifs = notifications.filter((n) => !n.read).length;
-  const pendingCourses = courses.filter((c) => !c.archived && c.mandatory).length;
-  const recentDocs = documents.filter((d) => !d.archived).slice(0, 3);
-  const activeHighlights = highlights.filter((h) => h.active).sort((a, b) => a.order - b.order);
-  const activeCommunications = communications.filter((c) => !c.archived);
+const quickAccessItems = [
+  {
+    id: 1,
+    title: 'Iniciación a Payfit',
+    subtitle: 'aprende a usar la plataforma',
+    items: ['control de jornada', 'solicitud de vacaciones', 'descargar documentos'],
+    cta: 'explorar mas',
+    path: '/payfit',
+    bgClass: 'bg-info',
+    iconBgClass: 'bg-info/70',
+    icon: Clock,
+  },
+  {
+    id: 2,
+    title: 'Comunicaciones',
+    subtitle: 'mantente al día',
+    items: ['avisos internos', 'novedades de empresa', 'comunicados oficiales'],
+    cta: 'explorar mas',
+    path: '/comunicaciones',
+    bgClass: 'bg-secondary',
+    iconBgClass: 'bg-secondary/70',
+    icon: Layers,
+  },
+  {
+    id: 3,
+    title: 'Cursos obligatorios',
+    subtitle: 'formación requerida',
+    items: ['prevención de riesgos', 'protección de datos', 'compliance'],
+    cta: 'explorar mas',
+    path: '/cursos',
+    bgClass: 'bg-success',
+    iconBgClass: 'bg-success/70',
+    icon: BookOpen,
+  },
+  {
+    id: 4,
+    title: 'Seguridad IT',
+    subtitle: 'soporte y recursos',
+    items: ['preguntas frecuentes', 'solicitar soporte', 'reportar incidencia'],
+    cta: 'explorar mas',
+    path: '/seguridad-it',
+    bgClass: 'bg-warning',
+    iconBgClass: 'bg-warning/70',
+    icon: Shield,
+  },
+  {
+    id: 5,
+    title: 'Beneficios sociales',
+    subtitle: 'descubre tus ventajas',
+    items: ['seguro médico', 'descuentos formación', 'programas educativos'],
+    cta: 'explorar mas',
+    path: '/beneficios',
+    bgClass: 'bg-primary',
+    iconBgClass: 'bg-primary/70',
+    icon: Gift,
+  },
+  {
+    id: 6,
+    title: 'Organigrama',
+    subtitle: 'estructura de la empresa',
+    items: ['departamentos', 'equipos', 'contactos internos'],
+    cta: 'explorar mas',
+    path: '/organigrama',
+    bgClass: 'bg-secondary',
+    iconBgClass: 'bg-secondary/70',
+    icon: Network,
+  },
+];
 
-  const quickAccess = [
-    { label: 'Payfit', icon: Clock, path: '/payfit', desc: 'Fichar y gestionar nóminas' },
-    { label: 'Comunicaciones', icon: Megaphone, path: '/comunicaciones', desc: 'Últimos comunicados' },
-    { label: 'Cursos', icon: BookOpen, path: '/cursos', desc: 'Formación obligatoria' },
-    { label: 'Seguridad IT', icon: Shield, path: '/seguridad-it', desc: 'Soporte y preguntas' },
-  ];
+export default function InicioPage() {
+  const { communications } = useAppStore();
+  const navigate = useNavigate();
+  const [carouselIndex, setCarouselIndex] = useState(0);
+
+  const activeCommunications = communications.filter((c) => !c.archived);
+  const maxIndex = Math.max(0, quickAccessItems.length - 3);
+
+  const prev = useCallback(() => setCarouselIndex((i) => Math.max(0, i - 1)), []);
+  const next = useCallback(() => setCarouselIndex((i) => Math.min(maxIndex, i + 1)), [maxIndex]);
 
   return (
     <div className="space-y-8">
-      <PageHeader
-        title={`¡Hola, ${currentUser.name.split(' ')[0]}!`}
-        description="Bienvenido al portal de empleados de CCC"
-      />
-
-      {/* Highlighted announcements */}
-      {activeHighlights.length > 0 && (
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {activeHighlights.map((h) => (
-            <div
-              key={h.id}
-              className="rounded-xl border-2 border-primary/20 bg-primary/5 p-4 cursor-pointer hover:border-primary/40 transition-all"
-              onClick={() => h.link && navigate(h.link)}
-            >
-              <div className="flex items-center gap-2 mb-1">
-                <Star className="h-4 w-4 text-primary" />
-                <h3 className="font-semibold text-sm text-card-foreground">{h.title}</h3>
-              </div>
-              <p className="text-sm text-muted-foreground">{h.description}</p>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Notification highlights */}
-      {unreadNotifs > 0 && (
-        <div className="rounded-xl border border-warning/30 bg-warning/5 p-4">
-          <div className="flex items-center gap-3">
-            <Bell className="h-5 w-5 text-warning flex-shrink-0" />
-            <div className="flex-1">
-              <p className="text-sm font-medium text-card-foreground">
-                Tienes <span className="text-primary font-bold">{unreadNotifs}</span> notificación{unreadNotifs > 1 ? 'es' : ''} sin leer
-              </p>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                {notifications.filter(n => !n.read).slice(0, 2).map(n => n.title).join(' • ')}
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Stats */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Notificaciones" value={unreadNotifs} icon={<Bell className="h-6 w-6" />} />
-        <StatCard label="Comunicados" value={activeCommunications.length} icon={<Megaphone className="h-6 w-6" />} />
-        <StatCard label="Cursos pendientes" value={pendingCourses} icon={<BookOpen className="h-6 w-6" />} trend={pendingCourses > 0 ? `${pendingCourses} obligatorio${pendingCourses > 1 ? 's' : ''}` : undefined} />
-        <StatCard label="Documentos" value={documents.filter(d => !d.archived).length} icon={<FileText className="h-6 w-6" />} />
-      </div>
-
-      {/* Quick access */}
-      <div>
-        <h2 className="mb-3 text-lg font-semibold text-secondary">Acceso rápido</h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {quickAccess.map((item) => (
-            <InfoCard
-              key={item.path}
-              title={item.label}
-              description={item.desc}
-              icon={<item.icon className="h-5 w-5" />}
-              onClick={() => navigate(item.path)}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* Recent communications */}
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-semibold text-secondary">Comunicados recientes</h2>
-          <Button variant="ghost" size="sm" className="gap-1 text-primary" onClick={() => navigate('/comunicaciones')}>
-            Ver todos <ArrowRight className="h-4 w-4" />
-          </Button>
-        </div>
-        <div className="space-y-3">
-          {activeCommunications.slice(0, 3).map((comm) => (
-            <div
-              key={comm.id}
-              className="rounded-xl border bg-card p-4 card-shadow cursor-pointer hover:card-shadow-hover transition-all"
-              onClick={() => navigate('/comunicaciones')}
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-semibold text-card-foreground">{comm.title}</h3>
-                    {comm.pinned && (
-                      <Badge variant="secondary" className="bg-primary/10 text-primary text-xs">Destacado</Badge>
-                    )}
-                  </div>
-                  <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{comm.content}</p>
-                </div>
-                <div className="text-right flex-shrink-0">
-                  <p className="text-xs text-muted-foreground">{comm.date}</p>
-                  <p className="text-xs text-muted-foreground">{comm.author}</p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Recent documents */}
-      {recentDocs.length > 0 && (
-        <div>
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-lg font-semibold text-secondary">Documentos recientes</h2>
-            <Button variant="ghost" size="sm" className="gap-1 text-primary" onClick={() => navigate('/documentos')}>
+      {/* Anuncios Recientes */}
+      <section>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold text-secondary">Anuncios recientes</h2>
+          {activeCommunications.length > 0 && (
+            <Button variant="ghost" size="sm" className="gap-1 text-primary" onClick={() => navigate('/comunicaciones')}>
               Ver todos <ArrowRight className="h-4 w-4" />
             </Button>
+          )}
+        </div>
+
+        {activeCommunications.length === 0 ? (
+          <div className="rounded-xl border border-border bg-card p-8 text-center">
+            <p className="text-muted-foreground">No hay comunicados recientes</p>
           </div>
-          <div className="space-y-3">
-            {recentDocs.map((doc) => (
-              <DocumentCard key={doc.id} document={doc} />
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {activeCommunications.slice(0, 6).map((comm) => (
+              <div
+                key={comm.id}
+                className="rounded-xl border border-border bg-card p-5 cursor-pointer hover:shadow-md transition-shadow"
+                onClick={() => navigate('/comunicaciones')}
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10">
+                    <span className="text-xs font-bold text-primary">
+                      {comm.author.split(' ').map(w => w[0]).join('').slice(0, 2)}
+                    </span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-card-foreground truncate">{comm.author}</p>
+                    <p className="text-xs text-muted-foreground">{comm.date}</p>
+                  </div>
+                </div>
+                <h3 className="font-semibold text-card-foreground mb-1">{comm.title}</h3>
+                <p className="text-sm text-muted-foreground line-clamp-2">{comm.content}</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* Accesos Rápidos - Carrusel */}
+      <section>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold text-secondary">Accesos rápidos</h2>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={prev}
+              disabled={carouselIndex === 0}
+              className="rounded-md p-1.5 hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            >
+              <ChevronLeft className="h-5 w-5 text-foreground" />
+            </button>
+            <button
+              onClick={next}
+              disabled={carouselIndex >= maxIndex}
+              className="rounded-md p-1.5 hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            >
+              <ChevronRight className="h-5 w-5 text-foreground" />
+            </button>
+          </div>
+        </div>
+
+        <div className="overflow-hidden">
+          <div
+            className="flex gap-4 transition-transform duration-300 ease-out"
+            style={{ transform: `translateX(-${carouselIndex * (100 / 3 + 1.33)}%)` }}
+          >
+            {quickAccessItems.map((item) => (
+              <div
+                key={item.id}
+                className={`${item.bgClass} rounded-2xl p-6 text-white flex-shrink-0 flex flex-col justify-between min-h-[260px]`}
+                style={{ width: 'calc((100% - 2rem) / 3)' }}
+              >
+                <div>
+                  <div className={`${item.iconBgClass} h-10 w-10 rounded-full flex items-center justify-center mb-4`}>
+                    <item.icon className="h-5 w-5 text-white" />
+                  </div>
+                  <h3 className="text-lg font-bold mb-1">{item.title}</h3>
+                  <p className="text-sm text-white/80 mb-4">{item.subtitle}</p>
+                  <ul className="space-y-1.5">
+                    {item.items.map((text, i) => (
+                      <li key={i} className="text-sm text-white/90 flex items-center gap-2">
+                        <span className="h-1 w-1 rounded-full bg-white/60 flex-shrink-0" />
+                        {text}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <button
+                  onClick={() => navigate(item.path)}
+                  className="mt-4 text-sm font-medium text-white/90 hover:text-white flex items-center gap-1 transition-colors self-start"
+                >
+                  {item.cta} <ArrowRight className="h-4 w-4" />
+                </button>
+              </div>
             ))}
           </div>
         </div>
-      )}
-
-      {/* Payfit highlight */}
-      <div className="rounded-xl border-2 border-primary/20 bg-primary/5 p-6">
-        <div className="flex items-center gap-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-            <Clock className="h-6 w-6" />
-          </div>
-          <div className="flex-1">
-            <h3 className="font-semibold text-secondary">¿Necesitas fichar o consultar tu nómina?</h3>
-            <p className="text-sm text-muted-foreground">
-              Accede a la guía de Payfit para aprender a gestionar fichajes, solicitudes y documentos.
-            </p>
-          </div>
-          <Button onClick={() => navigate('/payfit')}>Ir a Payfit</Button>
-        </div>
-      </div>
+      </section>
     </div>
   );
 }
