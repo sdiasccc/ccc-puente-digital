@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Shield, Phone, Send } from 'lucide-react';
+import { Shield, Phone, Send, AlertOctagon } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
@@ -41,20 +41,7 @@ export default function SeguridadITPage() {
         </InfoCard>
       </div>
 
-      <div>
-        <h2 className="mb-3 text-lg font-semibold text-secondary">Preguntas frecuentes</h2>
-        <div className="rounded-xl border bg-card card-shadow">
-          <Accordion type="single" collapsible>
-            {activeFaqs.map((faq) => (
-              <AccordionItem key={faq.id} value={faq.id}>
-                <AccordionTrigger className="px-5 text-sm font-medium text-left">{faq.question}</AccordionTrigger>
-                <AccordionContent className="px-5 pb-4 text-sm text-muted-foreground">{faq.answer}</AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </div>
-      </div>
-
+      {/* Solicitud de soporte */}
       <div>
         <h2 className="mb-3 text-lg font-semibold text-secondary">Solicitud de soporte</h2>
         <div className="rounded-xl border bg-card p-6 card-shadow">
@@ -66,6 +53,37 @@ export default function SeguridadITPage() {
             <div className="space-y-2 md:col-span-2"><Label htmlFor="message">Mensaje</Label><Textarea id="message" {...register('message', { required: true })} placeholder="Detalla tu solicitud..." rows={4} /></div>
             <div className="md:col-span-2"><Button type="submit" className="gap-2"><Send className="h-4 w-4" /> Enviar solicitud</Button></div>
           </form>
+        </div>
+      </div>
+
+      {/* Brecha de seguridad - Destacado */}
+      <div className="rounded-2xl bg-info p-6 flex flex-col sm:flex-row items-center gap-5">
+        <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-white/15">
+          <AlertOctagon className="h-7 w-7 text-white" />
+        </div>
+        <div className="flex-1 text-center sm:text-left">
+          <h3 className="text-lg font-bold text-white">¿has detectado una brecha?</h3>
+          <p className="text-sm text-white/80 mt-1">
+            si sospechas de un ataque, has recibido un email sospechoso o has detectado actividad inusual, contactanos
+          </p>
+        </div>
+        <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold flex-shrink-0">
+          reportar incidencias
+        </Button>
+      </div>
+
+      {/* Preguntas frecuentes */}
+      <div>
+        <h2 className="mb-3 text-lg font-semibold text-secondary">Preguntas frecuentes</h2>
+        <div className="rounded-xl border bg-card card-shadow">
+          <Accordion type="single" collapsible>
+            {activeFaqs.map((faq) => (
+              <AccordionItem key={faq.id} value={faq.id}>
+                <AccordionTrigger className="px-5 text-sm font-medium text-left">{faq.question}</AccordionTrigger>
+                <AccordionContent className="px-5 pb-4 text-sm text-muted-foreground">{faq.answer}</AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
         </div>
       </div>
     </div>
