@@ -24,7 +24,7 @@ export default function AppHeader() {
     .slice(0, 2);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 flex h-16 items-center justify-between border-b bg-card px-4 card-shadow">
+    <header className="fixed top-0 left-0 right-0 z-50 flex h-16 items-center justify-between border-b border-sidebar-border bg-secondary px-4">
       <div className="flex items-center gap-3">
         <button onClick={toggleSidebar} className="rounded-md p-2 hover:bg-muted lg:hidden">
           <Menu className="h-5 w-5 text-foreground" />
