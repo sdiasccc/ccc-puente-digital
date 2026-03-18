@@ -39,10 +39,10 @@ export default function AppHeader() {
 
       <div className="hidden max-w-md flex-1 px-8 md:block">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-sidebar-foreground/60" />
           <Input
             placeholder="Buscar en el portal..."
-            className="h-9 pl-10 bg-muted border-0 focus-visible:ring-1 focus-visible:ring-primary"
+            className="h-9 pl-10 bg-sidebar-accent border-0 text-secondary-foreground placeholder:text-sidebar-foreground/60 focus-visible:ring-1 focus-visible:ring-primary"
           />
         </div>
       </div>
