@@ -87,6 +87,9 @@ export default function InicioPage() {
 
   return (
     <div className="space-y-8">
+      {/* Welcome modal for new users */}
+      <WelcomeModal />
+
       {/* Anuncios Recientes */}
       <section>
         <div className="flex items-center justify-between mb-4">
