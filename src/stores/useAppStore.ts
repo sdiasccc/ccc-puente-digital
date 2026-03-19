@@ -95,8 +95,40 @@ function crudHelpers<T extends { id: string }>(key: string) {
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
-  // Core
+  // Auth
+  isAuthenticated: false,
   currentUser: mockUser,
+  login: (email, _password) => {
+    const user = get().users.find((u) => u.email === email && u.active);
+    if (user) {
+      set({ isAuthenticated: true, currentUser: user });
+      return true;
+    }
+    return false;
+  },
+  register: (name, email, _password) => {
+    const exists = get().users.some((u) => u.email === email);
+    if (exists) return false;
+    const newUser: User = {
+      id: generateId(),
+      name,
+      email,
+      department: 'Sin asignar',
+      office: 'Sin asignar',
+      role: 'employee',
+      active: true,
+      createdAt: new Date().toISOString(),
+    };
+    set((s) => ({
+      users: [...s.users, newUser],
+      currentUser: newUser,
+      isAuthenticated: true,
+    }));
+    return true;
+  },
+  logout: () => set({ isAuthenticated: false }),
+
+  // Core
   sidebarOpen: true,
   toggleSidebar: () => set((s) => ({ sidebarOpen: !s.sidebarOpen })),
   hasPermission: (action) => {
