@@ -7,8 +7,14 @@ import {
 } from '@/services/mockData';
 
 interface AppState {
-  // Core
+  // Auth
+  isAuthenticated: boolean;
   currentUser: User;
+  login: (email: string, password: string) => boolean;
+  register: (name: string, email: string, password: string) => boolean;
+  logout: () => void;
+
+  // Core
   sidebarOpen: boolean;
   toggleSidebar: () => void;
   hasPermission: (action: string) => boolean;
