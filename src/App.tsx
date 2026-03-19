@@ -14,6 +14,7 @@ import BeneficiosPage from "@/pages/BeneficiosPage";
 import OrganigramaPage from "@/pages/OrganigramaPage";
 import PerfilPage from "@/pages/PerfilPage";
 import AdminPage from "@/pages/AdminPage";
+import SolicitudBeneficioPage from "@/pages/SolicitudBeneficioPage";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
