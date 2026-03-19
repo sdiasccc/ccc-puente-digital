@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '@/stores/useAppStore';
 import { ChevronLeft, ChevronRight, Clock, Layers, BookOpen, Shield, Gift, Network, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import WelcomeModal from '@/components/shared/WelcomeModal';
 
 const quickAccessItems = [
   {
@@ -86,6 +87,9 @@ export default function InicioPage() {
 
   return (
     <div className="space-y-8">
+      {/* Welcome modal for new users */}
+      <WelcomeModal />
+
       {/* Anuncios Recientes */}
       <section>
         <div className="flex items-center justify-between mb-4">

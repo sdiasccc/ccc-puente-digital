@@ -10,6 +10,7 @@ export interface User {
   role: UserRole;
   avatar?: string;
   active: boolean;
+  createdAt?: string;
 }
 
 // ============ Notifications ============
@@ -31,6 +32,8 @@ export interface Communication {
   content: string;
   date: string;
   author: string;
+  authorRole?: string;
+  authorAvatar?: string;
   attachments?: string[];
   pinned?: boolean;
   archived?: boolean;

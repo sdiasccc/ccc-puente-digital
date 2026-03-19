@@ -1,9 +1,11 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { useAppStore } from "@/stores/useAppStore";
 import MainLayout from "@/components/layout/MainLayout";
+import LoginPage from "@/pages/LoginPage";
 import InicioPage from "@/pages/InicioPage";
 import PayfitPage from "@/pages/PayfitPage";
 import ComunicacionesPage from "@/pages/ComunicacionesPage";
@@ -11,13 +13,19 @@ import CursosPage from "@/pages/CursosPage";
 import SeguridadITPage from "@/pages/SeguridadITPage";
 import PolizaSegurosPage from "@/pages/PolizaSegurosPage";
 import BeneficiosPage from "@/pages/BeneficiosPage";
+import SolicitudBeneficioPage from "@/pages/SolicitudBeneficioPage";
 import OrganigramaPage from "@/pages/OrganigramaPage";
 import PerfilPage from "@/pages/PerfilPage";
 import AdminPage from "@/pages/AdminPage";
-import SolicitudBeneficioPage from "@/pages/SolicitudBeneficioPage";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
+
+function AuthGuard({ children }: { children: React.ReactNode }) {
+  const isAuthenticated = useAppStore((s) => s.isAuthenticated);
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  return <>{children}</>;
+}
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -26,7 +34,8 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route element={<MainLayout />}>
+          <Route path="/login" element={<LoginPage />} />
+          <Route element={<AuthGuard><MainLayout /></AuthGuard>}>
             <Route path="/" element={<InicioPage />} />
             <Route path="/payfit" element={<PayfitPage />} />
             <Route path="/comunicaciones" element={<ComunicacionesPage />} />
