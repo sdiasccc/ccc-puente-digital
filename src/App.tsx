@@ -14,6 +14,7 @@ import BeneficiosPage from "@/pages/BeneficiosPage";
 import OrganigramaPage from "@/pages/OrganigramaPage";
 import PerfilPage from "@/pages/PerfilPage";
 import AdminPage from "@/pages/AdminPage";
+import SolicitudBeneficioPage from "@/pages/SolicitudBeneficioPage";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="/seguridad-it" element={<SeguridadITPage />} />
             <Route path="/poliza-seguros" element={<PolizaSegurosPage />} />
             <Route path="/beneficios" element={<BeneficiosPage />} />
+            <Route path="/beneficios/solicitud" element={<SolicitudBeneficioPage />} />
             <Route path="/organigrama" element={<OrganigramaPage />} />
             <Route path="/perfil" element={<PerfilPage />} />
             <Route path="/admin" element={<AdminPage />} />
