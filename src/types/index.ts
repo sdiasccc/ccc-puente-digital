@@ -10,6 +10,7 @@ export interface User {
   role: UserRole;
   avatar?: string;
   active: boolean;
+  createdAt?: string;
 }
 
 // ============ Notifications ============
