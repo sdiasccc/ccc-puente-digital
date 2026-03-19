@@ -32,6 +32,8 @@ export interface Communication {
   content: string;
   date: string;
   author: string;
+  authorRole?: string;
+  authorAvatar?: string;
   attachments?: string[];
   pinned?: boolean;
   archived?: boolean;
