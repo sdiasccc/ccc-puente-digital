@@ -5,28 +5,40 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import { AlertCircle, Clock } from 'lucide-react';
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { login, register } = useAppStore();
+  const { login, register, users } = useAppStore();
   const [isRegister, setIsRegister] = useState(false);
   const [form, setForm] = useState({ name: '', email: '', password: '' });
+  const [pendingMessage, setPendingMessage] = useState(false);
+  const [registeredMessage, setRegisteredMessage] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setPendingMessage(false);
+    setRegisteredMessage(false);
+
     if (isRegister) {
       if (!form.name.trim() || !form.email.trim() || !form.password.trim()) {
         toast.error('Rellena todos los campos');
         return;
       }
-      const ok = register(form.name.trim(), form.email.trim(), form.password);
-      if (ok) {
-        toast.success('¡Cuenta creada con éxito!');
-        navigate('/');
-      } else {
+      const result = register(form.name.trim(), form.email.trim(), form.password);
+      if (result === 'success') {
+        setRegisteredMessage(true);
+        setForm({ name: '', email: '', password: '' });
+      } else if (result === 'exists') {
         toast.error('Ya existe una cuenta con ese email');
       }
     } else {
+      // Check if user exists but is pending
+      const user = users.find((u) => u.email === form.email.trim());
+      if (user && user.status === 'pendiente') {
+        setPendingMessage(true);
+        return;
+      }
       const ok = login(form.email.trim(), form.password);
       if (ok) {
         toast.success('Sesión iniciada');
@@ -41,7 +53,7 @@ export default function LoginPage() {
     <div className="min-h-screen bg-secondary flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-white">CCC</h1>
+          <h1 className="text-3xl font-bold text-white">Intranet CCC</h1>
           <p className="text-white/60 mt-2">Portal del empleado</p>
         </div>
 
@@ -49,6 +61,26 @@ export default function LoginPage() {
           <h2 className="text-xl font-semibold text-secondary mb-6">
             {isRegister ? 'Crear cuenta' : 'Iniciar sesión'}
           </h2>
+
+          {pendingMessage && (
+            <div className="flex items-start gap-3 rounded-lg bg-warning/10 border border-warning/30 p-4 mb-4">
+              <Clock className="h-5 w-5 text-warning flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-medium text-warning">En espera</p>
+                <p className="text-xs text-muted-foreground mt-1">Tu cuenta aún no ha sido activada por un administrador.</p>
+              </div>
+            </div>
+          )}
+
+          {registeredMessage && (
+            <div className="flex items-start gap-3 rounded-lg bg-info/10 border border-info/30 p-4 mb-4">
+              <AlertCircle className="h-5 w-5 text-info flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-medium text-info">Petición registrada</p>
+                <p className="text-xs text-muted-foreground mt-1">Un administrador debe validar tu acceso antes de que puedas entrar.</p>
+              </div>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {isRegister && (
@@ -92,7 +124,11 @@ export default function LoginPage() {
             <button
               type="button"
               className="text-primary font-medium hover:underline"
-              onClick={() => setIsRegister(!isRegister)}
+              onClick={() => {
+                setIsRegister(!isRegister);
+                setPendingMessage(false);
+                setRegisteredMessage(false);
+              }}
             >
               {isRegister ? 'Iniciar sesión' : 'Regístrate'}
             </button>

@@ -1,4 +1,4 @@
-import { Bell, Search, Menu, ChevronDown } from 'lucide-react';
+import { Bell, Search, Menu, ChevronDown, BellOff } from 'lucide-react';
 import { useAppStore } from '@/stores/useAppStore';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -9,11 +9,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useNavigate } from 'react-router-dom';
 
 export default function AppHeader() {
-  const { currentUser, notifications, toggleSidebar } = useAppStore();
+  const { currentUser, notifications, toggleSidebar, logout } = useAppStore();
   const navigate = useNavigate();
   const unreadCount = notifications.filter((n) => !n.read).length;
 
@@ -22,6 +22,11 @@ export default function AppHeader() {
     .map((w) => w[0])
     .join('')
     .slice(0, 2);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 flex h-16 items-center justify-between border-b border-sidebar-border bg-secondary px-4">
@@ -33,7 +38,7 @@ export default function AppHeader() {
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
             <span className="text-sm font-bold text-primary-foreground">CCC</span>
           </div>
-          <span className="hidden text-lg font-bold text-secondary-foreground sm:block">Portal CCC</span>
+          <span className="hidden text-lg font-bold text-secondary-foreground sm:block">Intranet</span>
         </div>
       </div>
 
@@ -62,14 +67,21 @@ export default function AppHeader() {
           <DropdownMenuContent align="end" className="w-80">
             <div className="px-3 py-2 font-semibold text-sm">Notificaciones</div>
             <DropdownMenuSeparator />
-            {notifications.slice(0, 5).map((n) => (
-              <DropdownMenuItem key={n.id} className="flex flex-col items-start gap-1 p-3">
-                <span className={`text-sm font-medium ${n.read ? 'text-muted-foreground' : 'text-foreground'}`}>
-                  {n.title}
-                </span>
-                <span className="text-xs text-muted-foreground line-clamp-1">{n.message}</span>
-              </DropdownMenuItem>
-            ))}
+            {notifications.length === 0 ? (
+              <div className="flex flex-col items-center gap-2 py-6 text-muted-foreground">
+                <BellOff className="h-8 w-8 opacity-40" />
+                <p className="text-sm">Panel de notificaciones vacío</p>
+              </div>
+            ) : (
+              notifications.slice(0, 5).map((n) => (
+                <DropdownMenuItem key={n.id} className="flex flex-col items-start gap-1 p-3">
+                  <span className={`text-sm font-medium ${n.read ? 'text-muted-foreground' : 'text-foreground'}`}>
+                    {n.title}
+                  </span>
+                  <span className="text-xs text-muted-foreground line-clamp-1">{n.message}</span>
+                </DropdownMenuItem>
+              ))
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
 
@@ -77,6 +89,7 @@ export default function AppHeader() {
           <DropdownMenuTrigger asChild>
             <button className="flex items-center gap-2 rounded-lg p-1.5 hover:bg-sidebar-accent">
               <Avatar className="h-8 w-8">
+                {currentUser.avatar && <AvatarImage src={currentUser.avatar} />}
                 <AvatarFallback className="bg-primary text-primary-foreground text-xs font-semibold">
                   {initials}
                 </AvatarFallback>
@@ -94,7 +107,7 @@ export default function AppHeader() {
               <DropdownMenuItem onClick={() => navigate('/admin')}>Administración</DropdownMenuItem>
             )}
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-destructive">Cerrar sesión</DropdownMenuItem>
+            <DropdownMenuItem className="text-destructive" onClick={handleLogout}>Cerrar sesión</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

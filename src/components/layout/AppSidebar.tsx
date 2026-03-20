@@ -30,7 +30,6 @@ export default function AppSidebar() {
 
   return (
     <>
-      {/* Mobile overlay */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 z-30 bg-secondary/50 lg:hidden"
@@ -69,7 +68,7 @@ export default function AppSidebar() {
         </nav>
 
         <div className="border-t border-sidebar-border px-4 py-4">
-          <p className="text-xs text-sidebar-foreground/60">© 2026 CCC • Portal empleado</p>
+          <p className="text-xs text-sidebar-foreground/60">© 2026 CCC • Intranet</p>
         </div>
       </aside>
     </>

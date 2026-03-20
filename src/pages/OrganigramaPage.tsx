@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useAppStore } from '@/stores/useAppStore';
 import PageHeader from '@/components/shared/PageHeader';
 import { Input } from '@/components/ui/input';
@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import FormDialog from '@/components/shared/FormDialog';
-import { MapPin, Search, Plus } from 'lucide-react';
+import { MapPin, Search, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
 import type { OrgNode } from '@/types';
 
@@ -29,8 +29,8 @@ function OrgCard({ node, search }: { node: OrgNode & { children: any[] }; search
   const highlighted = search && node.name.toLowerCase().includes(search.toLowerCase());
 
   return (
-    <div className="flex flex-col items-center">
-      <div className={`rounded-xl border bg-card p-4 card-shadow hover:card-shadow-hover transition-all text-center w-48 ${highlighted ? 'ring-2 ring-primary' : ''}`}>
+    <div className="flex flex-col items-center flex-shrink-0">
+      <div className={`rounded-xl border bg-card p-4 card-shadow hover:card-shadow-hover transition-all text-center w-44 ${highlighted ? 'ring-2 ring-primary' : ''}`}>
         <Avatar className="mx-auto h-12 w-12 mb-2">
           <AvatarFallback className="bg-primary/10 text-primary font-semibold">{initials}</AvatarFallback>
         </Avatar>
@@ -44,7 +44,7 @@ function OrgCard({ node, search }: { node: OrgNode & { children: any[] }; search
       {node.children.length > 0 && (
         <>
           <div className="w-px h-6 bg-border" />
-          <div className="flex gap-4">
+          <div className="flex gap-3">
             {node.children.map((child: any) => (
               <div key={child.id} className="relative flex flex-col items-center">
                 <div className="w-px h-6 bg-border" />
@@ -59,17 +59,21 @@ function OrgCard({ node, search }: { node: OrgNode & { children: any[] }; search
 }
 
 export default function OrganigramaPage() {
-  const { orgNodes, users, currentUser, createOrgNode, hasPermission } = useAppStore();
+  const { orgNodes, users, currentUser, createOrgNode, completeOnboardingStep } = useAppStore();
   const isAdmin = currentUser.role === 'admin';
   const active = orgNodes.filter((n) => !n.archived);
 
   const [search, setSearch] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [form, setForm] = useState({ userId: '', role: '', parentId: '' });
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    completeOnboardingStep(currentUser.id, 'orgVisited');
+  }, [currentUser.id, completeOnboardingStep]);
 
   const tree = useMemo(() => buildTree(active), [active]);
 
-  // Users not already in the org chart
   const availableUsers = users.filter(
     (u) => u.active && !active.some((n) => n.name === u.name)
   );
@@ -89,20 +93,17 @@ export default function OrganigramaPage() {
     setForm({ userId: '', role: '', parentId: '' });
   };
 
+  const scrollLeft = () => scrollRef.current?.scrollBy({ left: -300, behavior: 'smooth' });
+  const scrollRight = () => scrollRef.current?.scrollBy({ left: 300, behavior: 'smooth' });
+
   return (
     <div className="space-y-6">
       <PageHeader title="Organigrama" description="Estructura organizativa de CCC" />
 
-      {/* Search + Admin button */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Buscar por nombre..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-9"
-          />
+          <Input placeholder="Buscar por nombre..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
         </div>
         {isAdmin && (
           <Button className="gap-2" onClick={() => setDialogOpen(true)}>
@@ -111,16 +112,30 @@ export default function OrganigramaPage() {
         )}
       </div>
 
-      {/* Tree view */}
-      <div className="overflow-x-auto rounded-xl border bg-card p-8 card-shadow">
-        <div className="flex justify-center min-w-[800px] gap-8">
-          {tree.map((root) => (
-            <OrgCard key={root.id} node={root} search={search} />
-          ))}
+      {/* Tree view with horizontal scroll arrows */}
+      <div className="relative">
+        <button
+          onClick={scrollLeft}
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 rounded-full bg-card border border-border p-2 card-shadow hover:bg-muted transition-colors"
+        >
+          <ChevronLeft className="h-5 w-5 text-foreground" />
+        </button>
+        <button
+          onClick={scrollRight}
+          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 rounded-full bg-card border border-border p-2 card-shadow hover:bg-muted transition-colors"
+        >
+          <ChevronRight className="h-5 w-5 text-foreground" />
+        </button>
+
+        <div ref={scrollRef} className="overflow-x-auto rounded-xl border bg-card p-8 card-shadow scroll-smooth mx-8">
+          <div className="flex justify-center gap-6 min-w-max">
+            {tree.map((root) => (
+              <OrgCard key={root.id} node={root} search={search} />
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Admin dialog */}
       <FormDialog open={dialogOpen} onOpenChange={setDialogOpen} title="Agregar al organigrama" onSubmit={handleAdd}>
         <div className="space-y-2">
           <Label>Usuario registrado</Label>

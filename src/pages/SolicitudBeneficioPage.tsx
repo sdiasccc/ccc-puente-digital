@@ -18,10 +18,10 @@ export default function SolicitudBeneficioPage() {
     e.preventDefault();
     if (!reason.trim()) return;
 
-    // Create a notification for admins
+    // Create notification for admins about benefit request
     createNotification({
-      title: `Solicitud: ${benefit}`,
-      message: `${currentUser.name} ha solicitado información sobre "${benefit}". Motivo: ${reason}`,
+      title: `Solicitud de beneficio: ${benefit}`,
+      message: `${currentUser.name} (${currentUser.email}) ha solicitado información sobre "${benefit}". Motivo: ${reason}`,
       date: new Date().toISOString().split('T')[0],
       read: false,
       type: 'info',

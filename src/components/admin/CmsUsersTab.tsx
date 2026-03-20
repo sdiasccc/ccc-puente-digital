@@ -10,14 +10,14 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Plus } from 'lucide-react';
+import { Plus, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import type { User, UserRole } from '@/types';
 
 const roleLabels: Record<string, string> = { admin: 'Admin', hr_team: 'RRHH', employee: 'Empleado' };
 
 export default function CmsUsersTab() {
-  const { users, createUser, updateUser, removeUser } = useAppStore();
+  const { users, createUser, updateUser, removeUser, activateUser } = useAppStore();
   const [search, setSearch] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -46,7 +46,7 @@ export default function CmsUsersTab() {
       updateUser(editing.id, form);
       toast.success('Usuario actualizado');
     } else {
-      createUser({ ...form, active: true });
+      createUser({ ...form, active: true, status: 'activo' });
       toast.success('Usuario creado');
     }
     setDialogOpen(false);
@@ -58,6 +58,11 @@ export default function CmsUsersTab() {
       toast.success('Usuario eliminado');
       setDeleteId(null);
     }
+  };
+
+  const handleActivate = (id: string) => {
+    activateUser(id);
+    toast.success('Usuario activado');
   };
 
   return (
@@ -84,12 +89,22 @@ export default function CmsUsersTab() {
           { key: 'role', header: 'Rol', render: (u) => <Badge variant="outline">{roleLabels[u.role]}</Badge> },
           {
             key: 'status', header: 'Estado',
-            render: (u) => <Badge className={u.active ? 'bg-success/10 text-success' : 'bg-muted text-muted-foreground'}>{u.active ? 'Activo' : 'Inactivo'}</Badge>,
+            render: (u) => {
+              if (u.status === 'pendiente') {
+                return <Badge className="bg-warning/10 text-warning">Pendiente</Badge>;
+              }
+              return <Badge className={u.active ? 'bg-success/10 text-success' : 'bg-muted text-muted-foreground'}>{u.active ? 'Activo' : 'Inactivo'}</Badge>;
+            },
           },
           {
             key: 'actions', header: 'Acciones',
             render: (u) => (
               <div className="flex gap-1">
+                {u.status === 'pendiente' && (
+                  <Button variant="ghost" size="sm" className="text-success gap-1" onClick={() => handleActivate(u.id)}>
+                    <CheckCircle className="h-3.5 w-3.5" /> Activar
+                  </Button>
+                )}
                 <Button variant="ghost" size="sm" onClick={() => openEdit(u)}>Editar</Button>
                 <Button variant="ghost" size="sm" className="text-destructive" onClick={() => setDeleteId(u.id)}>Eliminar</Button>
               </div>

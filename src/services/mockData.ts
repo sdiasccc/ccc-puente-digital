@@ -8,26 +8,19 @@ export const mockUser: User = {
   office: 'Madrid',
   role: 'admin',
   active: true,
+  status: 'activo',
 };
 
 export const mockUsers: User[] = [
   mockUser,
-  { id: '2', name: 'María Fernández', email: 'maria@ccc.com', department: 'RRHH', office: 'Madrid', role: 'hr_team', active: true },
-  { id: '3', name: 'Pedro López', email: 'pedro@ccc.com', department: 'Tecnología', office: 'Madrid', role: 'employee', active: true },
-  { id: '4', name: 'Laura Sánchez', email: 'laura@ccc.com', department: 'Diseño', office: 'Barcelona', role: 'employee', active: false },
+  { id: '2', name: 'María Fernández', email: 'maria@ccc.com', department: 'RRHH', office: 'Madrid', role: 'hr_team', active: true, status: 'activo' },
+  { id: '3', name: 'Pedro López', email: 'pedro@ccc.com', department: 'Tecnología', office: 'Madrid', role: 'employee', active: true, status: 'activo' },
+  { id: '4', name: 'Laura Sánchez', email: 'laura@ccc.com', department: 'Diseño', office: 'Barcelona', role: 'employee', active: false, status: 'activo' },
 ];
 
-export const mockNotifications: Notification[] = [
-  { id: '1', title: 'Nuevo comunicado', message: 'Se ha publicado un nuevo comunicado sobre la política de teletrabajo.', date: '2026-03-13', read: false, type: 'info' },
-  { id: '2', title: 'Curso obligatorio pendiente', message: 'Recuerda completar el curso de PRL antes del 30 de marzo.', date: '2026-03-12', read: false, type: 'warning' },
-  { id: '3', title: 'Nómina disponible', message: 'Tu nómina de febrero ya está disponible en Payfit.', date: '2026-03-10', read: true, type: 'success' },
-];
+export const mockNotifications: Notification[] = [];
 
-export const mockCommunications: Communication[] = [
-  { id: '1', title: 'Actualización política de teletrabajo', content: 'A partir del 1 de abril se amplía a 3 días de teletrabajo por semana. Consulta los detalles en el documento adjunto.', date: '2026-03-13', author: 'RRHH', pinned: true },
-  { id: '2', title: 'Evento de team building - Abril', content: 'El próximo 15 de abril celebraremos una jornada de team building en las oficinas de Madrid. ¡Apúntate!', date: '2026-03-11', author: 'People & Culture' },
-  { id: '3', title: 'Nuevos beneficios de salud', content: 'Hemos ampliado nuestra póliza de seguros con cobertura dental incluida para todos los empleados.', date: '2026-03-08', author: 'RRHH' },
-];
+export const mockCommunications: Communication[] = [];
 
 export const mockDocuments: Document[] = [
   { id: '1', title: 'Política de teletrabajo 2026', description: 'Normativa actualizada sobre trabajo remoto y horarios flexibles.', category: 'politica', uploadDate: '2026-03-13', author: 'RRHH', fileType: 'pdf', version: 2, downloads: 45, roles: ['admin', 'hr_team', 'employee'] },
@@ -38,25 +31,25 @@ export const mockDocuments: Document[] = [
 ];
 
 export const mockCourses: Course[] = [
-  { id: '1', title: 'Prevención de Riesgos Laborales (PRL)', description: 'Curso obligatorio sobre seguridad y salud en el trabajo. Incluye protocolos de emergencia y prevención de riesgos.', link: '#', duration: '4 horas', mandatory: true },
-  { id: '2', title: 'Protección de Datos (RGPD)', description: 'Formación sobre el Reglamento General de Protección de Datos y su aplicación en el entorno laboral.', link: '#', duration: '2 horas', mandatory: true },
-  { id: '3', title: 'Código Ético y Compliance', description: 'Principios éticos de la empresa, canal de denuncias y normativa de cumplimiento.', link: '#', duration: '1.5 horas', mandatory: true },
-  { id: '4', title: 'Ciberseguridad Básica', description: 'Buenas prácticas en seguridad informática: contraseñas, phishing, navegación segura y uso de VPN.', link: '#', duration: '2 horas', mandatory: true },
-  { id: '5', title: 'Acoso Laboral y Diversidad', description: 'Protocolo contra el acoso laboral, igualdad de género y diversidad en el entorno profesional.', link: '#', duration: '1.5 horas', mandatory: true },
+  { id: '1', title: 'Prevención de Riesgos Laborales (PRL)', description: 'Curso obligatorio sobre seguridad y salud en el trabajo.', link: '#', duration: '4 horas', mandatory: true },
+  { id: '2', title: 'Protección de Datos (RGPD)', description: 'Formación sobre el Reglamento General de Protección de Datos.', link: '#', duration: '2 horas', mandatory: true },
+  { id: '3', title: 'Código Ético y Compliance', description: 'Principios éticos de la empresa y normativa de cumplimiento.', link: '#', duration: '1.5 horas', mandatory: true },
+  { id: '4', title: 'Ciberseguridad Básica', description: 'Buenas prácticas en seguridad informática.', link: '#', duration: '2 horas', mandatory: true },
+  { id: '5', title: 'Acoso Laboral y Diversidad', description: 'Protocolo contra el acoso laboral e igualdad de género.', link: '#', duration: '1.5 horas', mandatory: true },
 ];
 
 export const mockFAQs: FAQItem[] = [
-  { id: '1', question: '¿Cómo cambio mi contraseña?', answer: 'Accede a "Configuración" > "Seguridad" > "Cambiar contraseña". Recuerda usar al menos 12 caracteres con mayúsculas, números y símbolos.' },
-  { id: '2', question: '¿Qué hago si recibo un email sospechoso?', answer: 'No abras enlaces ni descargues archivos. Reenvía el email a seguridad@ccc.com y elimínalo de tu bandeja.' },
-  { id: '3', question: '¿Cómo conecto la VPN?', answer: 'Descarga el cliente VPN desde el portal de IT. Usa tus credenciales corporativas para conectarte. Si es la primera vez, contacta con soporte.' },
-  { id: '4', question: '¿Puedo instalar software en mi equipo?', answer: 'Solo el software autorizado por IT puede ser instalado. Envía una solicitud a través del formulario de soporte indicando el software necesario.' },
+  { id: '1', question: '¿Cómo cambio mi contraseña?', answer: 'Accede a "Configuración" > "Seguridad" > "Cambiar contraseña".' },
+  { id: '2', question: '¿Qué hago si recibo un email sospechoso?', answer: 'No abras enlaces ni descargues archivos. Reenvía a seguridad@ccc.com.' },
+  { id: '3', question: '¿Cómo conecto la VPN?', answer: 'Descarga el cliente VPN desde el portal de IT y usa tus credenciales corporativas.' },
+  { id: '4', question: '¿Puedo instalar software en mi equipo?', answer: 'Solo software autorizado por IT. Envía solicitud a través del formulario de soporte.' },
 ];
 
 export const mockBenefits: Benefit[] = [
-  { id: '1', title: 'Seguro médico privado', description: 'Cobertura médica completa con la posibilidad de incluir familiares directos a precio reducido.', icon: 'Heart' },
-  { id: '2', title: 'Formación continua', description: 'Descuentos de hasta el 50% en másteres, cursos de idiomas y certificaciones profesionales.', icon: 'GraduationCap' },
-  { id: '3', title: 'Programa de bienestar', description: 'Acceso a gimnasio con tarifa corporativa, sesiones de mindfulness y programa de salud mental.', icon: 'Dumbbell' },
-  { id: '4', title: 'Retribución flexible', description: 'Ticket restaurante, transporte, guardería y seguro médico con ventajas fiscales.', icon: 'Gift' },
+  { id: '1', title: 'Seguro médico privado', description: 'Cobertura médica completa con posibilidad de incluir familiares.', icon: 'Heart' },
+  { id: '2', title: 'Formación continua', description: 'Descuentos de hasta el 50% en másteres y certificaciones.', icon: 'GraduationCap' },
+  { id: '3', title: 'Programa de bienestar', description: 'Acceso a gimnasio, mindfulness y programa de salud mental.', icon: 'Dumbbell' },
+  { id: '4', title: 'Retribución flexible', description: 'Ticket restaurante, transporte, guardería y seguro médico.', icon: 'Gift' },
 ];
 
 export const mockOrgNodes: OrgNode[] = [
