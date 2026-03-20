@@ -1,15 +1,19 @@
-import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { ExternalLink } from 'lucide-react';
+import { useAppStore } from '@/stores/useAppStore';
 
 export default function PayfitPage() {
-  const navigate = useNavigate();
+  const { currentUser, completeOnboardingStep } = useAppStore();
+
+  useEffect(() => {
+    // Mark video as watched when user visits this page (opens video)
+    completeOnboardingStep(currentUser.id, 'videoWatched');
+  }, [currentUser.id, completeOnboardingStep]);
 
   return (
     <div className="space-y-8">
       {/* Hero Section */}
       <section className="relative rounded-2xl overflow-hidden min-h-[280px] flex items-center">
-        {/* Background image placeholder */}
         <div className="absolute inset-0 bg-gradient-to-r from-secondary via-secondary/95 to-secondary/70" />
         <div className="absolute inset-0 opacity-20 bg-[url('https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&q=80')] bg-cover bg-center" />
 
@@ -26,8 +30,6 @@ export default function PayfitPage() {
               accede ya
             </Button>
           </div>
-
-          {/* Payfit logo placeholder */}
           <div className="hidden lg:flex h-24 w-24 items-center justify-center rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20">
             <span className="text-2xl font-bold text-white/80">PF</span>
           </div>
@@ -39,7 +41,6 @@ export default function PayfitPage() {
         <h2 className="text-2xl font-semibold text-secondary">
           iniciación a payfit, paso a paso
         </h2>
-
         <div className="mx-auto max-w-3xl rounded-2xl overflow-hidden border border-border bg-secondary/5">
           <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
             <iframe

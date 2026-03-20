@@ -1,22 +1,27 @@
+import { useEffect } from 'react';
 import { Heart, GraduationCap, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import { useAppStore } from '@/stores/useAppStore';
 
 export default function BeneficiosPage() {
   const navigate = useNavigate();
+  const { currentUser, completeOnboardingStep } = useAppStore();
+
+  useEffect(() => {
+    completeOnboardingStep(currentUser.id, 'benefitsVisited');
+  }, [currentUser.id, completeOnboardingStep]);
 
   const benefitCards = [
     {
       title: 'Seguro Médico',
-      description:
-        'Todos los empleados cuentan con un seguro médico privado que cubre consultas, pruebas diagnósticas, hospitalización y urgencias desde el primer día.',
+      description: 'Todos los empleados cuentan con un seguro médico privado que cubre consultas, pruebas diagnósticas, hospitalización y urgencias desde el primer día.',
       icon: Heart,
       image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=600&q=80',
     },
     {
       title: 'Descuentos en Formación',
-      description:
-        'Accede a descuentos exclusivos en programas de formación, másteres y certificaciones profesionales con nuestras instituciones colaboradoras.',
+      description: 'Accede a descuentos exclusivos en programas de formación, másteres y certificaciones profesionales con nuestras instituciones colaboradoras.',
       icon: GraduationCap,
       image: 'https://images.unsplash.com/photo-1513258496099-48168024aec0?w=600&q=80',
     },

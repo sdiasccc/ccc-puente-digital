@@ -1,5 +1,6 @@
 // ============ User & Auth ============
 export type UserRole = 'admin' | 'hr_team' | 'employee';
+export type UserStatus = 'pendiente' | 'activo';
 
 export interface User {
   id: string;
@@ -10,7 +11,16 @@ export interface User {
   role: UserRole;
   avatar?: string;
   active: boolean;
+  status: UserStatus;
   createdAt?: string;
+}
+
+// ============ Onboarding ============
+export interface OnboardingState {
+  profileConfigured: boolean;
+  videoWatched: boolean;
+  orgVisited: boolean;
+  benefitsVisited: boolean;
 }
 
 // ============ Notifications ============
@@ -53,7 +63,7 @@ export interface Document {
   fileUrl?: string;
   version: number;
   downloads: number;
-  roles: UserRole[]; // who can access
+  roles: UserRole[];
   archived?: boolean;
 }
 

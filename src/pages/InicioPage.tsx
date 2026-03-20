@@ -13,8 +13,6 @@ const quickAccessItems = [
     items: ['control de jornada', 'solicitud de vacaciones', 'descargar documentos'],
     cta: 'explorar mas',
     path: '/payfit',
-    bgClass: 'bg-info',
-    iconBgClass: 'bg-info/70',
     icon: Clock,
   },
   {
@@ -24,8 +22,6 @@ const quickAccessItems = [
     items: ['avisos internos', 'novedades de empresa', 'comunicados oficiales'],
     cta: 'explorar mas',
     path: '/comunicaciones',
-    bgClass: 'bg-secondary',
-    iconBgClass: 'bg-secondary/70',
     icon: Layers,
   },
   {
@@ -35,8 +31,6 @@ const quickAccessItems = [
     items: ['prevención de riesgos', 'protección de datos', 'compliance'],
     cta: 'explorar mas',
     path: '/cursos',
-    bgClass: 'bg-success',
-    iconBgClass: 'bg-success/70',
     icon: BookOpen,
   },
   {
@@ -46,8 +40,6 @@ const quickAccessItems = [
     items: ['preguntas frecuentes', 'solicitar soporte', 'reportar incidencia'],
     cta: 'explorar mas',
     path: '/seguridad-it',
-    bgClass: 'bg-warning',
-    iconBgClass: 'bg-warning/70',
     icon: Shield,
   },
   {
@@ -57,8 +49,6 @@ const quickAccessItems = [
     items: ['seguro médico', 'descuentos formación', 'programas educativos'],
     cta: 'explorar mas',
     path: '/beneficios',
-    bgClass: 'bg-primary',
-    iconBgClass: 'bg-primary/70',
     icon: Gift,
   },
   {
@@ -68,8 +58,6 @@ const quickAccessItems = [
     items: ['departamentos', 'equipos', 'contactos internos'],
     cta: 'explorar mas',
     path: '/organigrama',
-    bgClass: 'bg-secondary',
-    iconBgClass: 'bg-secondary/70',
     icon: Network,
   },
 ];
@@ -87,7 +75,6 @@ export default function InicioPage() {
 
   return (
     <div className="space-y-8">
-      {/* Welcome modal for new users */}
       <WelcomeModal />
 
       {/* Anuncios Recientes */}
@@ -103,7 +90,7 @@ export default function InicioPage() {
 
         {activeCommunications.length === 0 ? (
           <div className="rounded-xl border border-border bg-card p-8 text-center">
-            <p className="text-muted-foreground">No hay comunicados recientes</p>
+            <p className="text-muted-foreground">No hay comunicados actualmente. Un administrador puede crear nuevos comunicados.</p>
           </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -124,7 +111,7 @@ export default function InicioPage() {
                     <p className="text-xs text-muted-foreground">{comm.date}</p>
                   </div>
                 </div>
-                <h3 className="font-semibold text-card-foreground mb-1">{comm.title}</h3>
+                {comm.title && <h3 className="font-semibold text-card-foreground mb-1">{comm.title}</h3>}
                 <p className="text-sm text-muted-foreground line-clamp-2">{comm.content}</p>
               </div>
             ))}
@@ -132,7 +119,7 @@ export default function InicioPage() {
         )}
       </section>
 
-      {/* Accesos Rápidos - Carrusel */}
+      {/* Accesos Rápidos - Carrusel - ALL same color (info) */}
       <section>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold text-secondary">Accesos rápidos</h2>
@@ -162,14 +149,16 @@ export default function InicioPage() {
             {quickAccessItems.map((item) => (
               <div
                 key={item.id}
-                className={`${item.bgClass} rounded-2xl p-6 text-white flex-shrink-0 flex flex-col justify-between min-h-[260px]`}
+                className="bg-info rounded-2xl p-6 text-white flex-shrink-0 flex flex-col justify-between min-h-[260px]"
                 style={{ width: 'calc((100% - 2rem) / 3)' }}
               >
                 <div>
-                  <div className={`${item.iconBgClass} h-10 w-10 rounded-full flex items-center justify-center mb-4`}>
-                    <item.icon className="h-5 w-5 text-white" />
+                  <div className="flex items-center gap-3 mb-4">
+                    <h3 className="text-lg font-bold">{item.title}</h3>
+                    <div className="bg-info/70 h-10 w-10 rounded-full flex items-center justify-center flex-shrink-0">
+                      <item.icon className="h-5 w-5 text-white" />
+                    </div>
                   </div>
-                  <h3 className="text-lg font-bold mb-1">{item.title}</h3>
                   <p className="text-sm text-white/80 mb-4">{item.subtitle}</p>
                   <ul className="space-y-1.5">
                     {item.items.map((text, i) => (
