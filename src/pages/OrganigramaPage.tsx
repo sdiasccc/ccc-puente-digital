@@ -86,7 +86,7 @@ export default function OrganigramaPage() {
       role: form.role,
       department: user.department,
       office: user.office,
-      parentId: form.parentId || undefined,
+      parentId: form.parentId && form.parentId !== '__none__' ? form.parentId : undefined,
     });
     toast.success(`${user.name} añadido al organigrama`);
     setDialogOpen(false);
@@ -164,7 +164,7 @@ export default function OrganigramaPage() {
           <Select value={form.parentId} onValueChange={(v) => setForm({ ...form, parentId: v })}>
             <SelectTrigger><SelectValue placeholder="Ninguno (raíz)" /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Ninguno (raíz)</SelectItem>
+              <SelectItem value="__none__">Ninguno (raíz)</SelectItem>
               {active.map((n) => (
                 <SelectItem key={n.id} value={n.id}>{n.name} - {n.role}</SelectItem>
               ))}
