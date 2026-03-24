@@ -86,7 +86,7 @@ export default function OrganigramaPage() {
       role: form.role,
       department: user.department,
       office: user.office,
-      parentId: form.parentId || undefined,
+      parentId: form.parentId && form.parentId !== '__none__' ? form.parentId : undefined,
     });
     toast.success(`${user.name} añadido al organigrama`);
     setDialogOpen(false);
