@@ -164,7 +164,7 @@ export default function OrganigramaPage() {
           <Select value={form.parentId} onValueChange={(v) => setForm({ ...form, parentId: v })}>
             <SelectTrigger><SelectValue placeholder="Ninguno (raíz)" /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Ninguno (raíz)</SelectItem>
+              <SelectItem value="__none__">Ninguno (raíz)</SelectItem>
               {active.map((n) => (
                 <SelectItem key={n.id} value={n.id}>{n.name} - {n.role}</SelectItem>
               ))}
