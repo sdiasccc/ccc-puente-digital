@@ -14,13 +14,13 @@ export default function BeneficiosPage() {
 
   const benefitCards = [
     {
-      title: 'Seguro Médico',
+      title: 'Seguro médico',
       description: 'Todos los empleados cuentan con un seguro médico privado que cubre consultas, pruebas diagnósticas, hospitalización y urgencias desde el primer día.',
       icon: Heart,
       image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=600&q=80',
     },
     {
-      title: 'Descuentos en Formación',
+      title: 'Descuentos en formación',
       description: 'Accede a descuentos exclusivos en programas de formación, másteres y certificaciones profesionales con nuestras instituciones colaboradoras.',
       icon: GraduationCap,
       image: 'https://images.unsplash.com/photo-1513258496099-48168024aec0?w=600&q=80',
