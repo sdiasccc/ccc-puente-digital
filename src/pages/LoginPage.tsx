@@ -4,14 +4,17 @@ import { useAppStore } from '@/stores/useAppStore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { AlertCircle, Clock } from 'lucide-react';
+
+const CCC_SEDES = ['Madrid', 'Barcelona', 'Sevilla', 'Valencia', 'Bilbao'];
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const { login, register, users } = useAppStore();
   const [isRegister, setIsRegister] = useState(false);
-  const [form, setForm] = useState({ name: '', email: '', password: '' });
+  const [form, setForm] = useState({ name: '', email: '', password: '', cargo: '', office: '' });
   const [pendingMessage, setPendingMessage] = useState(false);
   const [registeredMessage, setRegisteredMessage] = useState(false);
 
@@ -22,18 +25,17 @@ export default function LoginPage() {
 
     if (isRegister) {
       if (!form.name.trim() || !form.email.trim() || !form.password.trim()) {
-        toast.error('Rellena todos los campos');
+        toast.error('Rellena todos los campos obligatorios');
         return;
       }
-      const result = register(form.name.trim(), form.email.trim(), form.password);
+      const result = register(form.name.trim(), form.email.trim(), form.password, form.cargo.trim(), form.office);
       if (result === 'success') {
         setRegisteredMessage(true);
-        setForm({ name: '', email: '', password: '' });
+        setForm({ name: '', email: '', password: '', cargo: '', office: '' });
       } else if (result === 'exists') {
         toast.error('Ya existe una cuenta con ese email');
       }
     } else {
-      // Check if user exists but is pending
       const user = users.find((u) => u.email === form.email.trim());
       if (user && user.status === 'pendiente') {
         setPendingMessage(true);
@@ -84,15 +86,37 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {isRegister && (
-              <div className="space-y-2">
-                <Label htmlFor="name">Nombre completo</Label>
-                <Input
-                  id="name"
-                  placeholder="Tu nombre"
-                  value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                />
-              </div>
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="name">Nombre completo</Label>
+                  <Input
+                    id="name"
+                    placeholder="Tu nombre"
+                    value={form.name}
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="cargo">Cargo</Label>
+                  <Input
+                    id="cargo"
+                    placeholder="Ej: Desarrollador, Profesor, Manager..."
+                    value={form.cargo}
+                    onChange={(e) => setForm({ ...form, cargo: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="office">Sede CCC</Label>
+                  <Select value={form.office} onValueChange={(v) => setForm({ ...form, office: v })}>
+                    <SelectTrigger><SelectValue placeholder="Selecciona una sede" /></SelectTrigger>
+                    <SelectContent>
+                      {CCC_SEDES.map((s) => (
+                        <SelectItem key={s} value={s}>Sede {s}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </>
             )}
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>

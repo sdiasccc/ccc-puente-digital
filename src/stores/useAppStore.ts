@@ -7,12 +7,20 @@ import {
   mockCourses, mockFAQs, mockBenefits, mockOrgNodes, mockHighlights, rolePermissions,
 } from '@/services/mockData';
 
+function getOrgLevel(cargo: string): number {
+  const c = cargo.toLowerCase();
+  if (['administrador', 'director', 'directora', 'ceo'].some(k => c.includes(k))) return 1;
+  if (['responsable', 'manager', 'lead', 'jefe', 'jefa'].some(k => c.includes(k))) return 2;
+  if (['técnico', 'diseñador', 'diseñadora', 'desarrollador', 'desarrolladora', 'comercial', 'formador', 'formadora', 'profesor', 'profesora', 'personal de it'].some(k => c.includes(k))) return 3;
+  return 3;
+}
+
 interface AppState {
   // Auth
   isAuthenticated: boolean;
   currentUser: User;
   login: (email: string, password: string) => boolean;
-  register: (name: string, email: string, password: string) => 'success' | 'exists' | 'error';
+  register: (name: string, email: string, password: string, cargo?: string, office?: string) => 'success' | 'exists' | 'error';
   logout: () => void;
   activateUser: (id: string) => void;
 
@@ -101,7 +109,7 @@ export const useAppStore = create<AppState>()(
         set({ isAuthenticated: true, currentUser: user });
         return true;
       },
-      register: (name, email, _password) => {
+      register: (name, email, _password, cargo?, office?) => {
         const exists = get().users.some((u) => u.email === email);
         if (exists) return 'exists';
         const newUser: User = {
@@ -109,13 +117,14 @@ export const useAppStore = create<AppState>()(
           name,
           email,
           department: 'Sin asignar',
-          office: 'Sin asignar',
+          office: office || 'Sin asignar',
+          cargo: cargo || '',
           role: 'employee',
           active: true,
           status: 'pendiente',
           createdAt: new Date().toISOString(),
+          firstLogin: true,
         };
-        // Create admin notification
         const adminNotification: Notification = {
           id: generateId(),
           title: 'Nuevo registro de usuario',
@@ -131,10 +140,46 @@ export const useAppStore = create<AppState>()(
         return 'success';
       },
       logout: () => set({ isAuthenticated: false }),
-      activateUser: (id) =>
-        set((s) => ({
-          users: s.users.map((u) => u.id === id ? { ...u, status: 'activo' as const } : u),
-        })),
+      activateUser: (id) => {
+        const state = get();
+        const user = state.users.find(u => u.id === id);
+        if (!user) return;
+
+        const updatedUsers = state.users.map((u) => u.id === id ? { ...u, status: 'activo' as const } : u);
+
+        // Auto-insert into org chart if user has cargo and isn't already in it
+        const alreadyInOrg = state.orgNodes.some(n => n.name === user.name && !n.archived);
+        let newOrgNodes = state.orgNodes;
+        if (!alreadyInOrg && user.cargo) {
+          const level = getOrgLevel(user.cargo);
+          let parentId: string | undefined;
+          if (level === 2) {
+            const roots = state.orgNodes.filter(n => !n.parentId && !n.archived);
+            parentId = roots[0]?.id;
+          } else if (level === 3) {
+            const level2Nodes = state.orgNodes.filter(n => {
+              if (n.archived) return false;
+              const nodeLevel = getOrgLevel(n.role);
+              return nodeLevel <= 2;
+            });
+            // Try to find a parent in same department
+            const sameDept = level2Nodes.find(n => n.department.toLowerCase() === user.department.toLowerCase());
+            parentId = sameDept?.id || level2Nodes[0]?.id;
+          }
+          const newNode: OrgNode = {
+            id: generateId(),
+            name: user.name,
+            role: user.cargo,
+            department: user.department,
+            office: user.office,
+            avatar: user.avatar,
+            parentId,
+          };
+          newOrgNodes = [...state.orgNodes, newNode];
+        }
+
+        set({ users: updatedUsers, orgNodes: newOrgNodes });
+      },
 
       // Onboarding
       onboarding: {},
@@ -176,7 +221,7 @@ export const useAppStore = create<AppState>()(
       createNotification: (n) => set((s) => ({ notifications: [{ ...n, id: generateId() }, ...s.notifications] })),
       removeNotification: (id) => set((s) => ({ notifications: s.notifications.filter((n) => n.id !== id) })),
 
-      // Communications - starts empty
+      // Communications
       communications: [],
       createCommunication: (c) => set((s) => ({ communications: [{ ...c, id: generateId() }, ...s.communications] })),
       updateCommunication: (id, c) => set((s) => ({ communications: s.communications.map((i) => i.id === id ? { ...i, ...c } : i) })),

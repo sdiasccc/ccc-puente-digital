@@ -4,59 +4,62 @@ import { useAppStore } from '@/stores/useAppStore';
 import { ChevronLeft, ChevronRight, Clock, Layers, BookOpen, Shield, Gift, Network, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import WelcomeModal from '@/components/shared/WelcomeModal';
+import ProfileSetupModal from '@/components/shared/ProfileSetupModal';
+
+const cardColors = ['#1C44AE', '#4CA387', '#E18F35', '#1C44AE', '#4CA387', '#E18F35'];
 
 const quickAccessItems = [
   {
     id: 1,
     title: 'Iniciación a Payfit',
-    subtitle: 'aprende a usar la plataforma',
-    items: ['control de jornada', 'solicitud de vacaciones', 'descargar documentos'],
-    cta: 'explorar mas',
+    subtitle: 'Aprende a usar la plataforma',
+    items: ['Control de jornada', 'Solicitud de vacaciones', 'Descargar documentos'],
+    cta: 'Explorar más',
     path: '/payfit',
     icon: Clock,
   },
   {
     id: 2,
     title: 'Comunicaciones',
-    subtitle: 'mantente al día',
-    items: ['avisos internos', 'novedades de empresa', 'comunicados oficiales'],
-    cta: 'explorar mas',
+    subtitle: 'Mantente al día',
+    items: ['Avisos internos', 'Novedades de empresa', 'Comunicados oficiales'],
+    cta: 'Explorar más',
     path: '/comunicaciones',
     icon: Layers,
   },
   {
     id: 3,
     title: 'Cursos obligatorios',
-    subtitle: 'formación requerida',
-    items: ['prevención de riesgos', 'protección de datos', 'compliance'],
-    cta: 'explorar mas',
+    subtitle: 'Formación requerida',
+    items: ['Prevención de riesgos', 'Protección de datos', 'Compliance'],
+    cta: 'Explorar más',
     path: '/cursos',
     icon: BookOpen,
   },
   {
     id: 4,
     title: 'Seguridad IT',
-    subtitle: 'soporte y recursos',
-    items: ['preguntas frecuentes', 'solicitar soporte', 'reportar incidencia'],
-    cta: 'explorar mas',
+    subtitle: 'Soporte y recursos',
+    items: ['Preguntas frecuentes', 'Solicitar soporte', 'Reportar incidencia'],
+    cta: 'Explorar más',
     path: '/seguridad-it',
     icon: Shield,
   },
   {
     id: 5,
     title: 'Beneficios sociales',
-    subtitle: 'descubre tus ventajas',
-    items: ['seguro médico', 'descuentos formación', 'programas educativos'],
-    cta: 'explorar mas',
+    subtitle: 'Descubre tus ventajas',
+    items: ['Seguro médico', 'Descuentos formación', 'Programas educativos'],
+    cta: 'Explorar más',
     path: '/beneficios',
     icon: Gift,
   },
   {
     id: 6,
     title: 'Organigrama',
-    subtitle: 'estructura de la empresa',
-    items: ['departamentos', 'equipos', 'contactos internos'],
-    cta: 'explorar mas',
+    subtitle: 'Estructura de la empresa',
+    items: ['Departamentos', 'Equipos', 'Contactos internos'],
+    cta: 'Explorar más',
     path: '/organigrama',
     icon: Network,
   },
@@ -75,9 +78,10 @@ export default function InicioPage() {
 
   return (
     <div className="space-y-8">
+      <ProfileSetupModal />
       <WelcomeModal />
 
-      {/* Anuncios Recientes */}
+      {/* Anuncios recientes */}
       <section>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold text-secondary">Anuncios recientes</h2>
@@ -119,7 +123,7 @@ export default function InicioPage() {
         )}
       </section>
 
-      {/* Accesos Rápidos - Carrusel - ALL same color (info) */}
+      {/* Accesos rápidos */}
       <section>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold text-secondary">Accesos rápidos</h2>
@@ -146,16 +150,16 @@ export default function InicioPage() {
             className="flex gap-4 transition-transform duration-300 ease-out"
             style={{ transform: `translateX(-${carouselIndex * (100 / 3 + 1.33)}%)` }}
           >
-            {quickAccessItems.map((item) => (
+            {quickAccessItems.map((item, idx) => (
               <div
                 key={item.id}
-                className="bg-info rounded-2xl p-6 text-white flex-shrink-0 flex flex-col justify-between min-h-[260px]"
-                style={{ width: 'calc((100% - 2rem) / 3)' }}
+                className="rounded-2xl p-6 text-white flex-shrink-0 flex flex-col justify-between min-h-[260px]"
+                style={{ width: 'calc((100% - 2rem) / 3)', backgroundColor: cardColors[idx] }}
               >
                 <div>
                   <div className="flex items-center gap-3 mb-4">
                     <h3 className="text-lg font-bold">{item.title}</h3>
-                    <div className="bg-info/70 h-10 w-10 rounded-full flex items-center justify-center flex-shrink-0">
+                    <div className="h-10 w-10 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
                       <item.icon className="h-5 w-5 text-white" />
                     </div>
                   </div>

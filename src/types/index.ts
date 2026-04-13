@@ -8,11 +8,14 @@ export interface User {
   email: string;
   department: string;
   office: string;
+  cargo?: string;
+  bio?: string;
   role: UserRole;
   avatar?: string;
   active: boolean;
   status: UserStatus;
   createdAt?: string;
+  firstLogin?: boolean;
 }
 
 // ============ Onboarding ============
@@ -36,6 +39,12 @@ export interface Notification {
 }
 
 // ============ Communications ============
+export interface CommunicationAttachment {
+  name: string;
+  type: string;
+  data: string;
+}
+
 export interface Communication {
   id: string;
   title: string;
@@ -44,6 +53,7 @@ export interface Communication {
   author: string;
   authorRole?: string;
   authorAvatar?: string;
+  attachment?: CommunicationAttachment;
   attachments?: string[];
   pinned?: boolean;
   archived?: boolean;
@@ -103,6 +113,7 @@ export interface OrgNode {
   role: string;
   department: string;
   office: string;
+  avatar?: string;
   parentId?: string;
   archived?: boolean;
 }

@@ -56,19 +56,19 @@ export default function SeguridadITPage() {
         </div>
       </div>
 
-      {/* Brecha de seguridad - Destacado */}
+      {/* Brecha de seguridad */}
       <div className="rounded-2xl bg-info p-6 flex flex-col sm:flex-row items-center gap-5">
         <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-white/15">
           <AlertOctagon className="h-7 w-7 text-white" />
         </div>
         <div className="flex-1 text-center sm:text-left">
-          <h3 className="text-lg font-bold text-white">¿has detectado una brecha?</h3>
+          <h3 className="text-lg font-bold text-white">¿Has detectado una brecha?</h3>
           <p className="text-sm text-white/80 mt-1">
-            si sospechas de un ataque, has recibido un email sospechoso o has detectado actividad inusual, contactanos
+            Si sospechas de un ataque, has recibido un email sospechoso o has detectado actividad inusual, contáctanos
           </p>
         </div>
         <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold flex-shrink-0">
-          reportar incidencias
+          Reportar incidencias
         </Button>
       </div>
 
