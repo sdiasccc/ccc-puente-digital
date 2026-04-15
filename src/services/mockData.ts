@@ -34,10 +34,6 @@ export const mockDocuments: Document[] = [
 
 export const mockCourses: Course[] = [
   { id: '1', title: 'Prevención de riesgos laborales (PRL)', description: 'Curso obligatorio sobre seguridad y salud en el trabajo.', link: '#', duration: '4 horas', mandatory: true },
-  { id: '2', title: 'Protección de datos (RGPD)', description: 'Formación sobre el Reglamento General de Protección de Datos.', link: '#', duration: '2 horas', mandatory: true },
-  { id: '3', title: 'Código ético y compliance', description: 'Principios éticos de la empresa y normativa de cumplimiento.', link: '#', duration: '1.5 horas', mandatory: true },
-  { id: '4', title: 'Ciberseguridad básica', description: 'Buenas prácticas en seguridad informática.', link: '#', duration: '2 horas', mandatory: true },
-  { id: '5', title: 'Acoso laboral y diversidad', description: 'Protocolo contra el acoso laboral e igualdad de género.', link: '#', duration: '1.5 horas', mandatory: true },
 ];
 
 export const mockFAQs: FAQItem[] = [
