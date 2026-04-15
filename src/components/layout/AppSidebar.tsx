@@ -6,7 +6,7 @@ import {
   Megaphone,
   GraduationCap,
   Shield,
-  Heart,
+  
   Gift,
   Network,
 } from 'lucide-react';
@@ -18,7 +18,7 @@ const navItems = [
   { label: 'Comunicaciones', icon: Megaphone, path: '/comunicaciones' },
   { label: 'Cursos obligatorios', icon: GraduationCap, path: '/cursos' },
   { label: 'Seguridad IT', icon: Shield, path: '/seguridad-it' },
-  { label: 'Póliza de seguros', icon: Heart, path: '/poliza-seguros' },
+  
   { label: 'Beneficios sociales', icon: Gift, path: '/beneficios' },
   { label: 'Organigrama', icon: Network, path: '/organigrama' },
 ];

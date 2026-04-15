@@ -11,7 +11,7 @@ import PayfitPage from "@/pages/PayfitPage";
 import ComunicacionesPage from "@/pages/ComunicacionesPage";
 import CursosPage from "@/pages/CursosPage";
 import SeguridadITPage from "@/pages/SeguridadITPage";
-import PolizaSegurosPage from "@/pages/PolizaSegurosPage";
+
 import BeneficiosPage from "@/pages/BeneficiosPage";
 import SolicitudBeneficioPage from "@/pages/SolicitudBeneficioPage";
 import OrganigramaPage from "@/pages/OrganigramaPage";
@@ -41,7 +41,7 @@ const App = () => (
             <Route path="/comunicaciones" element={<ComunicacionesPage />} />
             <Route path="/cursos" element={<CursosPage />} />
             <Route path="/seguridad-it" element={<SeguridadITPage />} />
-            <Route path="/poliza-seguros" element={<PolizaSegurosPage />} />
+            
             <Route path="/beneficios" element={<BeneficiosPage />} />
             <Route path="/beneficios/solicitud" element={<SolicitudBeneficioPage />} />
             <Route path="/organigrama" element={<OrganigramaPage />} />
