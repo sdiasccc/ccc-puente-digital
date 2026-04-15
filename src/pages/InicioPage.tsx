@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '@/stores/useAppStore';
-import { ChevronLeft, ChevronRight, Clock, Layers, BookOpen, Shield, Gift, Network, ArrowRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Clock, Layers, BookOpen, Shield, Gift, Network, ArrowRight, FileText, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import WelcomeModal from '@/components/shared/WelcomeModal';
 import ProfileSetupModal from '@/components/shared/ProfileSetupModal';
@@ -31,7 +31,7 @@ const quickAccessItems = [
     id: 3,
     title: 'Cursos obligatorios',
     subtitle: 'Formación requerida',
-    items: ['Prevención de riesgos', 'Protección de datos', 'Compliance'],
+    items: ['Prevención de riesgos laborales'],
     cta: 'Explorar más',
     path: '/cursos',
     icon: BookOpen,
@@ -62,6 +62,15 @@ const quickAccessItems = [
     cta: 'Explorar más',
     path: '/organigrama',
     icon: Network,
+  },
+];
+
+const relevantDocs = [
+  {
+    id: 'rgpd',
+    title: 'Protección de datos (RGPD)',
+    description: 'Reglamento General de Protección de Datos y su aplicación en la empresa.',
+    link: 'https://www.google.com',
   },
 ];
 
@@ -121,6 +130,29 @@ export default function InicioPage() {
             ))}
           </div>
         )}
+      </section>
+
+      {/* Documentación relevante */}
+      <section>
+        <h2 className="text-xl font-semibold text-secondary mb-4">Documentación relevante</h2>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {relevantDocs.map((doc) => (
+            <div key={doc.id} className="rounded-xl border border-border bg-card p-5 card-shadow hover:shadow-md transition-shadow">
+              <div className="flex items-start gap-4">
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <FileText className="h-5 w-5" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-semibold text-card-foreground text-sm">{doc.title}</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">{doc.description}</p>
+                  <a href={doc.link} target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
+                    Acceder al documento <ExternalLink className="h-3.5 w-3.5" />
+                  </a>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </section>
 
       {/* Accesos rápidos */}

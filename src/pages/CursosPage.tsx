@@ -10,18 +10,6 @@ const defaultCourses = [
     description: 'Formación básica en prevención de riesgos laborales según la normativa vigente.',
     link: 'https://www.google.com',
   },
-  {
-    id: '2',
-    title: 'Protección de datos (RGPD)',
-    description: 'Curso obligatorio sobre el Reglamento General de Protección de Datos y su aplicación.',
-    link: 'https://www.google.com',
-  },
-  {
-    id: '3',
-    title: 'Compliance y ética corporativa',
-    description: 'Principios de cumplimiento normativo y código ético de la empresa.',
-    link: 'https://www.google.com',
-  },
 ];
 
 export default function CursosPage() {
@@ -52,7 +40,7 @@ export default function CursosPage() {
       </section>
 
       {/* Progress */}
-      <section className="space-y-4">
+      <section className="space-y-4 max-w-2xl mx-auto">
         <div className="rounded-xl border border-border bg-card p-5 card-shadow">
           <div className="flex items-center justify-between mb-3">
             <p className="text-sm font-semibold text-card-foreground">
@@ -72,13 +60,13 @@ export default function CursosPage() {
       </section>
 
       {/* Course list */}
-      <section className="space-y-3">
+      <section className="max-w-2xl mx-auto">
         {defaultCourses.map((course) => {
           const isCompleted = completed.has(course.id);
           return (
             <div
               key={course.id}
-              className={`rounded-xl border bg-card p-5 card-shadow flex items-center gap-4 transition-all ${isCompleted ? 'border-success/30 bg-success/5' : ''}`}
+              className={`rounded-xl border bg-card p-6 card-shadow flex items-center gap-4 transition-all ${isCompleted ? 'border-success/30 bg-success/5' : ''}`}
             >
               <button
                 onClick={() => toggleComplete(course.id)}
@@ -86,12 +74,12 @@ export default function CursosPage() {
                 title={isCompleted ? 'Marcar como pendiente' : 'Marcar como completado'}
               >
                 <CheckCircle2
-                  className={`h-6 w-6 transition-colors ${isCompleted ? 'text-success' : 'text-muted-foreground/30 hover:text-muted-foreground/60'}`}
+                  className={`h-7 w-7 transition-colors ${isCompleted ? 'text-success' : 'text-muted-foreground/30 hover:text-muted-foreground/60'}`}
                 />
               </button>
 
               <div className="flex-1 min-w-0">
-                <h3 className={`font-semibold text-card-foreground ${isCompleted ? 'line-through opacity-60' : ''}`}>
+                <h3 className={`font-semibold text-card-foreground text-base ${isCompleted ? 'line-through opacity-60' : ''}`}>
                   {course.title}
                 </h3>
                 <p className="text-sm text-muted-foreground mt-1">{course.description}</p>
