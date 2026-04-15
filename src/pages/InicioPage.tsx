@@ -135,21 +135,21 @@ export default function InicioPage() {
       {/* Documentación relevante */}
       <section>
         <h2 className="text-xl font-semibold text-secondary mb-4">Documentación relevante</h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="max-w-2xl mx-auto space-y-4">
           {relevantDocs.map((doc) => (
-            <div key={doc.id} className="rounded-xl border border-border bg-card p-5 card-shadow hover:shadow-md transition-shadow">
-              <div className="flex items-start gap-4">
-                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                  <FileText className="h-5 w-5" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-card-foreground text-sm">{doc.title}</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">{doc.description}</p>
-                  <a href={doc.link} target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
-                    Acceder al documento <ExternalLink className="h-3.5 w-3.5" />
-                  </a>
-                </div>
+            <div key={doc.id} className="rounded-xl border border-border bg-card p-6 card-shadow flex items-center gap-4 transition-all">
+              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <FileText className="h-5 w-5" />
               </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-card-foreground text-base">{doc.title}</h3>
+                <p className="text-sm text-muted-foreground mt-1">{doc.description}</p>
+              </div>
+              <a href={doc.link} target="_blank" rel="noopener noreferrer">
+                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2 flex-shrink-0">
+                  Acceder <ExternalLink className="h-4 w-4" />
+                </Button>
+              </a>
             </div>
           ))}
         </div>
