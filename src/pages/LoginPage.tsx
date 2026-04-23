@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { AlertCircle, Clock } from 'lucide-react';
+import { isValidCccEmail, EMAIL_VALIDATION_MESSAGE } from '@/lib/emailValidation';
 
 const CCC_SEDES = ['Madrid', 'Barcelona', 'Sevilla', 'Valencia', 'Bilbao'];
 
@@ -28,6 +29,10 @@ export default function LoginPage() {
         toast.error('Rellena todos los campos obligatorios');
         return;
       }
+      if (!isValidCccEmail(form.email)) {
+        toast.error(EMAIL_VALIDATION_MESSAGE);
+        return;
+      }
       const result = register(form.name.trim(), form.email.trim(), form.password, form.cargo.trim(), form.office);
       if (result === 'success') {
         setRegisteredMessage(true);
@@ -36,6 +41,10 @@ export default function LoginPage() {
         toast.error('Ya existe una cuenta con ese email');
       }
     } else {
+      if (!isValidCccEmail(form.email)) {
+        toast.error(EMAIL_VALIDATION_MESSAGE);
+        return;
+      }
       const user = users.find((u) => u.email === form.email.trim());
       if (user && user.status === 'pendiente') {
         setPendingMessage(true);
@@ -123,10 +132,15 @@ export default function LoginPage() {
               <Input
                 id="email"
                 type="email"
-                placeholder="tu@ccc.com"
+                placeholder="tu@cursoccc.com"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
               />
+              {isRegister && (
+                <p className="text-xs text-muted-foreground">
+                  Solo se permiten correos @cursoccc o @formacionprofesionalccc
+                </p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Contraseña</Label>
