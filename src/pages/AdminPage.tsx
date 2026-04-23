@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import PageHeader from '@/components/shared/PageHeader';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Users, Megaphone, FileText, Bell, GraduationCap, HelpCircle, Gift, Network, Star } from 'lucide-react';
+import { Users, Megaphone, FileText, Bell, GraduationCap, HelpCircle, Gift, Network, Star, History } from 'lucide-react';
 import { useAppStore } from '@/stores/useAppStore';
 import CmsUsersTab from '@/components/admin/CmsUsersTab';
 import CmsCommunicationsTab from '@/components/admin/CmsCommunicationsTab';
@@ -12,22 +12,25 @@ import CmsBenefitsTab from '@/components/admin/CmsBenefitsTab';
 import CmsOrgChartTab from '@/components/admin/CmsOrgChartTab';
 import CmsHighlightsTab from '@/components/admin/CmsHighlightsTab';
 import CmsNotificationsTab from '@/components/admin/CmsNotificationsTab';
-
-const tabs = [
-  { id: 'users', label: 'Usuarios', icon: Users },
-  { id: 'comms', label: 'Comunicaciones', icon: Megaphone },
-  { id: 'docs', label: 'Documentos', icon: FileText },
-  { id: 'courses', label: 'Cursos', icon: GraduationCap },
-  { id: 'faq', label: 'FAQ IT', icon: HelpCircle },
-  { id: 'benefits', label: 'Beneficios', icon: Gift },
-  { id: 'org', label: 'Organigrama', icon: Network },
-  { id: 'highlights', label: 'Destacados', icon: Star },
-  { id: 'notifs', label: 'Notificaciones', icon: Bell },
-];
+import CmsHistoryTab from '@/components/admin/CmsHistoryTab';
 
 export default function AdminPage() {
-  const { hasPermission } = useAppStore();
+  const { hasPermission, currentUser } = useAppStore();
   const canManage = hasPermission('manage_cms');
+  const canViewHistory = currentUser.role === 'support';
+
+  const tabs = [
+    { id: 'users', label: 'Usuarios', icon: Users },
+    { id: 'comms', label: 'Comunicaciones', icon: Megaphone },
+    { id: 'docs', label: 'Documentos', icon: FileText },
+    { id: 'courses', label: 'Cursos', icon: GraduationCap },
+    { id: 'faq', label: 'FAQ IT', icon: HelpCircle },
+    { id: 'benefits', label: 'Beneficios', icon: Gift },
+    { id: 'org', label: 'Organigrama', icon: Network },
+    { id: 'highlights', label: 'Destacados', icon: Star },
+    { id: 'notifs', label: 'Notificaciones', icon: Bell },
+    ...(canViewHistory ? [{ id: 'history', label: 'Historial', icon: History }] : []),
+  ];
 
   if (!canManage) {
     return (
@@ -64,6 +67,9 @@ export default function AdminPage() {
         <TabsContent value="org" className="mt-4"><CmsOrgChartTab /></TabsContent>
         <TabsContent value="highlights" className="mt-4"><CmsHighlightsTab /></TabsContent>
         <TabsContent value="notifs" className="mt-4"><CmsNotificationsTab /></TabsContent>
+        {canViewHistory && (
+          <TabsContent value="history" className="mt-4"><CmsHistoryTab /></TabsContent>
+        )}
       </Tabs>
     </div>
   );
