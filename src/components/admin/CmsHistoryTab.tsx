@@ -32,7 +32,7 @@ export default function CmsHistoryTab() {
   const auditLog = useAppStore((s) => s.auditLog);
 
   if (!auditLog || auditLog.length === 0) {
-    return <EmptyState icon={History} title="Sin registros" description="Aún no se ha registrado ninguna acción en el historial." />;
+    return <EmptyState icon={<History className="h-12 w-12" />} title="Sin registros" description="Aún no se ha registrado ninguna acción en el historial." />;
   }
 
   return (

@@ -27,6 +27,12 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+function NonEmployeeGuard({ children }: { children: React.ReactNode }) {
+  const role = useAppStore((s) => s.currentUser.role);
+  if (role === 'employee') return <Navigate to="/perfil" replace />;
+  return <>{children}</>;
+}
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -37,16 +43,15 @@ const App = () => (
           <Route path="/login" element={<LoginPage />} />
           <Route element={<AuthGuard><MainLayout /></AuthGuard>}>
             <Route path="/" element={<InicioPage />} />
-            <Route path="/payfit" element={<PayfitPage />} />
-            <Route path="/comunicaciones" element={<ComunicacionesPage />} />
-            <Route path="/cursos" element={<CursosPage />} />
-            <Route path="/seguridad-it" element={<SeguridadITPage />} />
-            
-            <Route path="/beneficios" element={<BeneficiosPage />} />
-            <Route path="/beneficios/solicitud" element={<SolicitudBeneficioPage />} />
-            <Route path="/organigrama" element={<OrganigramaPage />} />
+            <Route path="/payfit" element={<NonEmployeeGuard><PayfitPage /></NonEmployeeGuard>} />
+            <Route path="/comunicaciones" element={<NonEmployeeGuard><ComunicacionesPage /></NonEmployeeGuard>} />
+            <Route path="/cursos" element={<NonEmployeeGuard><CursosPage /></NonEmployeeGuard>} />
+            <Route path="/seguridad-it" element={<NonEmployeeGuard><SeguridadITPage /></NonEmployeeGuard>} />
+            <Route path="/beneficios" element={<NonEmployeeGuard><BeneficiosPage /></NonEmployeeGuard>} />
+            <Route path="/beneficios/solicitud" element={<NonEmployeeGuard><SolicitudBeneficioPage /></NonEmployeeGuard>} />
+            <Route path="/organigrama" element={<NonEmployeeGuard><OrganigramaPage /></NonEmployeeGuard>} />
             <Route path="/perfil" element={<PerfilPage />} />
-            <Route path="/admin" element={<AdminPage />} />
+            <Route path="/admin" element={<NonEmployeeGuard><AdminPage /></NonEmployeeGuard>} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
