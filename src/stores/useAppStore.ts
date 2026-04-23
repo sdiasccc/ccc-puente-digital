@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { User, Notification, Communication, Document, Course, FAQItem, Benefit, OrgNode, Highlight, UserRole, OnboardingState } from '@/types';
+import type { User, Notification, Communication, Document, Course, FAQItem, Benefit, OrgNode, Highlight, UserRole, OnboardingState, AuditEntry, AuditAction, AuditEntity } from '@/types';
 import { generateId } from '@/services/idGenerator';
 import {
   mockUser, mockUsers, mockNotifications, mockDocuments,
@@ -93,6 +93,10 @@ interface AppState {
   createHighlight: (h: Omit<Highlight, 'id'>) => void;
   updateHighlight: (id: string, h: Partial<Highlight>) => void;
   removeHighlight: (id: string) => void;
+
+  // Audit
+  auditLog: AuditEntry[];
+  logAudit: (action: AuditAction, entity: AuditEntity, entityName: string) => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -101,21 +105,23 @@ export const useAppStore = create<AppState>()(
       // Auth
       isAuthenticated: false,
       currentUser: mockUser,
-      login: (email, _password) => {
-        const user = get().users.find((u) => u.email === email);
+      login: (email, password) => {
+        const user = get().users.find((u) => u.email.toLowerCase() === email.toLowerCase());
         if (!user) return false;
+        if (user.password && user.password !== password) return false;
         if (user.status === 'pendiente') return false;
         if (!user.active) return false;
         set({ isAuthenticated: true, currentUser: user });
         return true;
       },
-      register: (name, email, _password, cargo?, office?) => {
+      register: (name, email, password, cargo?, office?) => {
         const exists = get().users.some((u) => u.email === email);
         if (exists) return 'exists';
         const newUser: User = {
           id: generateId(),
           name,
           email,
+          password,
           department: 'Sin asignar',
           office: office || 'Sin asignar',
           cargo: cargo || '',
@@ -208,12 +214,26 @@ export const useAppStore = create<AppState>()(
 
       // Users
       users: mockUsers,
-      createUser: (u) => set((s) => ({ users: [...s.users, { ...u, id: generateId() }] })),
-      updateUser: (id, u) => set((s) => ({
-        users: s.users.map((i) => i.id === id ? { ...i, ...u } : i),
-        currentUser: s.currentUser.id === id ? { ...s.currentUser, ...u } : s.currentUser,
-      })),
-      removeUser: (id) => set((s) => ({ users: s.users.filter((i) => i.id !== id) })),
+      createUser: (u) => {
+        const id = generateId();
+        set((s) => ({ users: [...s.users, { ...u, id }] }));
+        get().logAudit('create', 'user', u.name);
+      },
+      updateUser: (id, u) => {
+        const prev = get().users.find((i) => i.id === id);
+        set((s) => ({
+          users: s.users.map((i) => i.id === id ? { ...i, ...u } : i),
+          currentUser: s.currentUser.id === id ? { ...s.currentUser, ...u } : s.currentUser,
+        }));
+        if (prev && typeof u.active === 'boolean' && prev.active !== u.active) {
+          get().logAudit(u.active ? 'activate' : 'deactivate', 'user', prev.name);
+        }
+      },
+      removeUser: (id) => {
+        const prev = get().users.find((i) => i.id === id);
+        set((s) => ({ users: s.users.filter((i) => i.id !== id) }));
+        if (prev) get().logAudit('delete', 'user', prev.name);
+      },
 
       // Notifications
       notifications: mockNotifications,
@@ -223,25 +243,46 @@ export const useAppStore = create<AppState>()(
 
       // Communications
       communications: [],
-      createCommunication: (c) => set((s) => ({ communications: [{ ...c, id: generateId() }, ...s.communications] })),
+      createCommunication: (c) => {
+        set((s) => ({ communications: [{ ...c, id: generateId() }, ...s.communications] }));
+        get().logAudit('create', 'communication', c.title || c.content.slice(0, 40));
+      },
       updateCommunication: (id, c) => set((s) => ({ communications: s.communications.map((i) => i.id === id ? { ...i, ...c } : i) })),
       archiveCommunication: (id) => set((s) => ({ communications: s.communications.map((i) => i.id === id ? { ...i, archived: true } : i) })),
-      removeCommunication: (id) => set((s) => ({ communications: s.communications.filter((i) => i.id !== id) })),
+      removeCommunication: (id) => {
+        const prev = get().communications.find((i) => i.id === id);
+        set((s) => ({ communications: s.communications.filter((i) => i.id !== id) }));
+        if (prev) get().logAudit('delete', 'communication', prev.title || prev.content.slice(0, 40));
+      },
 
       // Documents
       documents: mockDocuments,
-      createDocument: (d) => set((s) => ({ documents: [{ ...d, id: generateId() }, ...s.documents] })),
+      createDocument: (d) => {
+        set((s) => ({ documents: [{ ...d, id: generateId() }, ...s.documents] }));
+        get().logAudit('create', 'document', d.title);
+      },
       updateDocument: (id, d) => set((s) => ({ documents: s.documents.map((i) => i.id === id ? { ...i, ...d } : i) })),
       archiveDocument: (id) => set((s) => ({ documents: s.documents.map((i) => i.id === id ? { ...i, archived: true } : i) })),
-      removeDocument: (id) => set((s) => ({ documents: s.documents.filter((i) => i.id !== id) })),
+      removeDocument: (id) => {
+        const prev = get().documents.find((i) => i.id === id);
+        set((s) => ({ documents: s.documents.filter((i) => i.id !== id) }));
+        if (prev) get().logAudit('delete', 'document', prev.title);
+      },
       incrementDownload: (id) => set((s) => ({ documents: s.documents.map((i) => i.id === id ? { ...i, downloads: i.downloads + 1 } : i) })),
 
       // Courses
       courses: mockCourses,
-      createCourse: (c) => set((s) => ({ courses: [...s.courses, { ...c, id: generateId() }] })),
+      createCourse: (c) => {
+        set((s) => ({ courses: [...s.courses, { ...c, id: generateId() }] }));
+        get().logAudit('create', 'course', c.title);
+      },
       updateCourse: (id, c) => set((s) => ({ courses: s.courses.map((i) => i.id === id ? { ...i, ...c } : i) })),
       archiveCourse: (id) => set((s) => ({ courses: s.courses.map((i) => i.id === id ? { ...i, archived: true } : i) })),
-      removeCourse: (id) => set((s) => ({ courses: s.courses.filter((i) => i.id !== id) })),
+      removeCourse: (id) => {
+        const prev = get().courses.find((i) => i.id === id);
+        set((s) => ({ courses: s.courses.filter((i) => i.id !== id) }));
+        if (prev) get().logAudit('delete', 'course', prev.title);
+      },
 
       // FAQs
       faqs: mockFAQs,
@@ -269,9 +310,25 @@ export const useAppStore = create<AppState>()(
       createHighlight: (h) => set((s) => ({ highlights: [...s.highlights, { ...h, id: generateId() }] })),
       updateHighlight: (id, h) => set((s) => ({ highlights: s.highlights.map((i) => i.id === id ? { ...i, ...h } : i) })),
       removeHighlight: (id) => set((s) => ({ highlights: s.highlights.filter((i) => i.id !== id) })),
+
+      // Audit
+      auditLog: [],
+      logAudit: (action, entity, entityName) => {
+        const u = get().currentUser;
+        const entry: AuditEntry = {
+          id: generateId(),
+          action,
+          entity,
+          entityName,
+          performedBy: u.name,
+          performedById: u.id,
+          date: new Date().toISOString(),
+        };
+        set((s) => ({ auditLog: [entry, ...s.auditLog] }));
+      },
     }),
     {
-      name: 'intranet-ccc-storage',
+      name: 'intranet-ccc-storage-v2',
       partialize: (state) => ({
         users: state.users,
         notifications: state.notifications,
@@ -285,6 +342,7 @@ export const useAppStore = create<AppState>()(
         onboarding: state.onboarding,
         isAuthenticated: state.isAuthenticated,
         currentUser: state.currentUser,
+        auditLog: state.auditLog,
       }),
     }
   )

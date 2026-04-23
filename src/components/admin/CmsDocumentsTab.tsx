@@ -8,36 +8,46 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Archive } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { toast } from 'sonner';
-import type { Document, DocumentCategory } from '@/types';
-
-const categoryLabels: Record<string, string> = { contrato: 'Contrato', nomina: 'Nómina', politica: 'Política', formacion: 'Formación', general: 'General' };
+import type { Document } from '@/types';
 
 export default function CmsDocumentsTab() {
-  const { documents, createDocument, updateDocument, archiveDocument, removeDocument } = useAppStore();
+  const { documents, createDocument, updateDocument, removeDocument } = useAppStore();
   const [search, setSearch] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [editing, setEditing] = useState<Document | null>(null);
-  const [form, setForm] = useState({ title: '', description: '', category: 'general' as DocumentCategory, author: '', fileType: 'pdf' as 'pdf' | 'doc' | 'image' });
+  const [form, setForm] = useState({ title: '', description: '', link: '' });
 
   const active = documents.filter((d) => !d.archived);
   const filtered = active.filter((d) => d.title.toLowerCase().includes(search.toLowerCase()));
 
-  const openCreate = () => { setEditing(null); setForm({ title: '', description: '', category: 'general', author: '', fileType: 'pdf' }); setDialogOpen(true); };
-  const openEdit = (d: Document) => { setEditing(d); setForm({ title: d.title, description: d.description, category: d.category, author: d.author, fileType: d.fileType }); setDialogOpen(true); };
+  const openCreate = () => { setEditing(null); setForm({ title: '', description: '', link: '' }); setDialogOpen(true); };
+  const openEdit = (d: Document) => { setEditing(d); setForm({ title: d.title, description: d.description, link: d.link || '' }); setDialogOpen(true); };
 
   const handleSubmit = () => {
-    if (!form.title) return;
+    if (!form.title || !form.link) {
+      toast.error('Título y enlace son obligatorios');
+      return;
+    }
     if (editing) {
-      updateDocument(editing.id, { ...form, version: editing.version + 1 });
-      toast.success('Documento actualizado (nueva versión)');
+      updateDocument(editing.id, { title: form.title, description: form.description, link: form.link, version: editing.version + 1 });
+      toast.success('Documento actualizado');
     } else {
-      createDocument({ ...form, uploadDate: new Date().toISOString().split('T')[0], version: 1, downloads: 0, roles: ['admin', 'hr_team', 'employee'] });
-      toast.success('Documento subido');
+      createDocument({
+        title: form.title,
+        description: form.description,
+        link: form.link,
+        category: 'general',
+        uploadDate: new Date().toISOString().split('T')[0],
+        author: '',
+        fileType: 'pdf',
+        version: 1,
+        downloads: 0,
+        roles: ['admin', 'hr_team', 'employee', 'support'],
+      });
+      toast.success('Documento añadido');
     }
     setDialogOpen(false);
   };
@@ -54,16 +64,13 @@ export default function CmsDocumentsTab() {
         data={filtered}
         columns={[
           { key: 'title', header: 'Título', render: (d) => <span className="font-medium text-card-foreground">{d.title}</span> },
-          { key: 'category', header: 'Categoría', render: (d) => <Badge variant="outline">{categoryLabels[d.category]}</Badge> },
-          { key: 'version', header: 'Versión', render: (d) => <span className="text-muted-foreground">v{d.version}</span> },
-          { key: 'downloads', header: 'Descargas', render: (d) => <span className="text-muted-foreground">{d.downloads}</span> },
-          { key: 'date', header: 'Fecha', render: (d) => <span className="text-muted-foreground">{d.uploadDate}</span> },
+          { key: 'description', header: 'Descripción', render: (d) => <span className="text-muted-foreground line-clamp-1">{d.description}</span> },
+          { key: 'link', header: 'Enlace', render: (d) => d.link ? <a href={d.link} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline truncate max-w-[200px] inline-block">{d.link}</a> : <span className="text-muted-foreground">—</span> },
           {
             key: 'actions', header: 'Acciones',
             render: (d) => (
               <div className="flex gap-1">
                 <Button variant="ghost" size="sm" onClick={() => openEdit(d)}>Editar</Button>
-                <Button variant="ghost" size="sm" onClick={() => { archiveDocument(d.id); toast.success('Archivado'); }}><Archive className="h-4 w-4" /></Button>
                 <Button variant="ghost" size="sm" className="text-destructive" onClick={() => setDeleteId(d.id)}>Eliminar</Button>
               </div>
             ),
@@ -71,19 +78,10 @@ export default function CmsDocumentsTab() {
         ]}
       />
 
-      <FormDialog open={dialogOpen} onOpenChange={setDialogOpen} title={editing ? 'Editar documento' : 'Subir documento'} onSubmit={handleSubmit}>
+      <FormDialog open={dialogOpen} onOpenChange={setDialogOpen} title={editing ? 'Editar documento' : 'Añadir documento'} onSubmit={handleSubmit}>
         <div className="space-y-2"><Label>Título</Label><Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /></div>
         <div className="space-y-2"><Label>Descripción</Label><Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={3} /></div>
-        <div className="space-y-2">
-          <Label>Categoría</Label>
-          <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v as DocumentCategory })}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>
-              {Object.entries(categoryLabels).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="space-y-2"><Label>Autor</Label><Input value={form.author} onChange={(e) => setForm({ ...form, author: e.target.value })} /></div>
+        <div className="space-y-2"><Label>Enlace</Label><Input value={form.link} onChange={(e) => setForm({ ...form, link: e.target.value })} placeholder="https://..." /></div>
       </FormDialog>
 
       <ConfirmDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)} title="Eliminar documento" description="¿Estás seguro?" onConfirm={() => { removeDocument(deleteId!); toast.success('Eliminado'); setDeleteId(null); }} confirmLabel="Eliminar" destructive />

@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Mail, Building, MapPin, Shield, Camera, Save } from 'lucide-react';
 import { toast } from 'sonner';
 
-const roleLabels = { admin: 'Administrador', hr_team: 'Equipo RRHH', employee: 'Empleado' };
+const roleLabels: Record<string, string> = { admin: 'Administrador', support: 'Soporte', hr_team: 'Equipo RRHH', employee: 'Empleado' };
 
 export default function PerfilPage() {
   const { currentUser, updateUser, completeOnboardingStep } = useAppStore();

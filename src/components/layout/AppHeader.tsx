@@ -16,6 +16,7 @@ export default function AppHeader() {
   const { currentUser, notifications, toggleSidebar, logout } = useAppStore();
   const navigate = useNavigate();
   const unreadCount = notifications.filter((n) => !n.read).length;
+  const isEmployee = currentUser.role === 'employee';
 
   const initials = currentUser.name
     .split(' ')
@@ -42,6 +43,7 @@ export default function AppHeader() {
         </div>
       </div>
 
+      {!isEmployee && (
       <div className="hidden max-w-md flex-1 px-8 md:block">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-sidebar-foreground/60" />
@@ -51,8 +53,10 @@ export default function AppHeader() {
           />
         </div>
       </div>
+      )}
 
       <div className="flex items-center gap-2">
+        {!isEmployee && (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="relative rounded-md p-2 hover:bg-sidebar-accent">
@@ -84,6 +88,7 @@ export default function AppHeader() {
             )}
           </DropdownMenuContent>
         </DropdownMenu>
+        )}
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -103,7 +108,7 @@ export default function AppHeader() {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
             <DropdownMenuItem onClick={() => navigate('/perfil')}>Mi perfil</DropdownMenuItem>
-            {(currentUser.role === 'admin' || currentUser.role === 'hr_team') && (
+            {(currentUser.role === 'admin' || currentUser.role === 'hr_team' || currentUser.role === 'support') && (
               <DropdownMenuItem onClick={() => navigate('/admin')}>Administración</DropdownMenuItem>
             )}
             <DropdownMenuSeparator />

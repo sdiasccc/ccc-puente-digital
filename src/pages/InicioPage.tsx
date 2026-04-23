@@ -112,6 +112,7 @@ export default function InicioPage() {
       </section>
 
       {/* Anuncios recientes */}
+      {currentUser.role !== 'employee' && (
       <section>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold text-secondary">Comunicados y noticias recientes</h2>
@@ -161,6 +162,7 @@ export default function InicioPage() {
           </div>
         )}
       </section>
+      )}
 
       {/* Documentación relevante */}
       <section>
