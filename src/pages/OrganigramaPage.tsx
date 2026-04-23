@@ -290,7 +290,7 @@ export default function OrganigramaPage() {
 
         <div
           ref={scrollRef}
-          className="rounded-xl border bg-card p-8 card-shadow scroll-smooth mx-12"
+          className="org-scroll rounded-xl border bg-card p-8 card-shadow scroll-smooth mx-12"
           style={{ maxHeight: '70vh', overflow: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           <style>{`.org-scroll::-webkit-scrollbar { display: none; }`}</style>
