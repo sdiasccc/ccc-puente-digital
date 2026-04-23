@@ -132,13 +132,13 @@ export default function LoginPage() {
               <Input
                 id="email"
                 type="email"
-                placeholder="tu@cursoccc.com"
+                placeholder="tu@cursosccc.com"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
               />
               {isRegister && (
                 <p className="text-xs text-muted-foreground">
-                  Solo se permiten correos @cursoccc o @formacionprofesionalccc
+                  Solo se permiten correos @cursosccc.com o @formacionprofesionalccc.com
                 </p>
               )}
             </div>

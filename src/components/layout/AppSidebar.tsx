@@ -6,27 +6,29 @@ import {
   Megaphone,
   GraduationCap,
   Shield,
-  
   Gift,
   Network,
+  User as UserIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-const navItems = [
-  { label: 'Inicio', icon: Home, path: '/' },
-  { label: 'Payfit', icon: Clock, path: '/payfit' },
-  { label: 'Comunicaciones', icon: Megaphone, path: '/comunicaciones' },
-  { label: 'Cursos obligatorios', icon: GraduationCap, path: '/cursos' },
-  { label: 'Seguridad IT', icon: Shield, path: '/seguridad-it' },
-  
-  { label: 'Beneficios sociales', icon: Gift, path: '/beneficios' },
-  { label: 'Organigrama', icon: Network, path: '/organigrama' },
+const allNavItems = [
+  { label: 'Inicio', icon: Home, path: '/', employeeAllowed: true },
+  { label: 'Payfit', icon: Clock, path: '/payfit', employeeAllowed: false },
+  { label: 'Comunicaciones', icon: Megaphone, path: '/comunicaciones', employeeAllowed: false },
+  { label: 'Cursos obligatorios', icon: GraduationCap, path: '/cursos', employeeAllowed: false },
+  { label: 'Seguridad IT', icon: Shield, path: '/seguridad-it', employeeAllowed: false },
+  { label: 'Beneficios sociales', icon: Gift, path: '/beneficios', employeeAllowed: false },
+  { label: 'Organigrama', icon: Network, path: '/organigrama', employeeAllowed: false },
+  { label: 'Mi perfil', icon: UserIcon, path: '/perfil', employeeAllowed: true },
 ];
 
 export default function AppSidebar() {
-  const { sidebarOpen } = useAppStore();
+  const { sidebarOpen, currentUser } = useAppStore();
   const location = useLocation();
   const navigate = useNavigate();
+  const isEmployee = currentUser.role === 'employee';
+  const navItems = allNavItems.filter((it) => !isEmployee || it.employeeAllowed);
 
   return (
     <>

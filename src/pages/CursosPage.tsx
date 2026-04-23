@@ -2,21 +2,14 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { ExternalLink, CheckCircle2, AlertTriangle } from 'lucide-react';
-
-const defaultCourses = [
-  {
-    id: '1',
-    title: 'Prevención de riesgos laborales',
-    description: 'Formación básica en prevención de riesgos laborales según la normativa vigente.',
-    link: 'https://www.google.com',
-  },
-];
+import { useAppStore } from '@/stores/useAppStore';
 
 export default function CursosPage() {
+  const courses = useAppStore((s) => s.courses).filter((c) => c.mandatory && !c.archived);
   const [completed, setCompleted] = useState<Set<string>>(new Set());
   const completedCount = completed.size;
-  const totalCourses = defaultCourses.length;
-  const progressPercent = (completedCount / totalCourses) * 100;
+  const totalCourses = courses.length;
+  const progressPercent = totalCourses > 0 ? (completedCount / totalCourses) * 100 : 0;
 
   const toggleComplete = (id: string) => {
     setCompleted((prev) => {
@@ -61,7 +54,12 @@ export default function CursosPage() {
 
       {/* Course list */}
       <section className="max-w-2xl mx-auto">
-        {defaultCourses.map((course) => {
+        {totalCourses === 0 && (
+          <div className="rounded-xl border border-border bg-card p-8 text-center text-muted-foreground">
+            No hay cursos obligatorios disponibles.
+          </div>
+        )}
+        {courses.map((course) => {
           const isCompleted = completed.has(course.id);
           return (
             <div
