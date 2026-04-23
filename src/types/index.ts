@@ -57,6 +57,7 @@ export interface Communication {
   attachments?: string[];
   pinned?: boolean;
   archived?: boolean;
+  kind?: 'noticia' | 'comunicado';
 }
 
 // ============ Documents ============
