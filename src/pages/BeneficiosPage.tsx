@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Heart, GraduationCap, Mail } from 'lucide-react';
+import { Heart, GraduationCap, Mail, Tag, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '@/stores/useAppStore';
@@ -24,6 +24,13 @@ export default function BeneficiosPage() {
       description: 'Accede a descuentos exclusivos en programas de formación, másteres y certificaciones profesionales con nuestras instituciones colaboradoras.',
       icon: GraduationCap,
       image: 'https://images.unsplash.com/photo-1513258496099-48168024aec0?w=600&q=80',
+    },
+    {
+      title: 'Club de descuentos',
+      description: 'Accede al portal exclusivo de Club de Beneficios CCC con descuentos en ocio, viajes, tecnología, salud y mucho más.',
+      icon: Tag,
+      image: 'https://images.unsplash.com/photo-1556742400-b5b7c5121f4e?w=600&q=80',
+      externalLink: 'https://ccc.clubdebenefits.com/pages/index',
     },
   ];
 
@@ -50,12 +57,20 @@ export default function BeneficiosPage() {
                   <h3 className="font-semibold text-lg text-card-foreground">{b.title}</h3>
                 </div>
                 <p className="text-sm text-muted-foreground leading-relaxed">{b.description}</p>
-                <Button
-                  className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground"
-                  onClick={() => navigate('/beneficios/solicitud', { state: { benefit: b.title } })}
-                >
-                  <Mail className="h-4 w-4" /> Contactar
-                </Button>
+                {b.externalLink ? (
+                  <a href={b.externalLink} target="_blank" rel="noopener noreferrer">
+                    <Button className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground">
+                      <ExternalLink className="h-4 w-4" /> Acceder al club
+                    </Button>
+                  </a>
+                ) : (
+                  <Button
+                    className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground"
+                    onClick={() => navigate('/beneficios/solicitud', { state: { benefit: b.title } })}
+                  >
+                    <Mail className="h-4 w-4" /> Contactar
+                  </Button>
+                )}
               </div>
             </div>
           );

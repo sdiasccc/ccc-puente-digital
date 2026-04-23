@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useAppStore } from '@/stores/useAppStore';
 import PageHeader from '@/components/shared/PageHeader';
 import { Input } from '@/components/ui/input';
@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import FormDialog from '@/components/shared/FormDialog';
-import { MapPin, Search, Plus, ChevronLeft, ChevronRight, Pencil, Trash2 } from 'lucide-react';
+import { MapPin, Search, Plus, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { OrgNode } from '@/types';
 
@@ -26,29 +26,38 @@ function buildTree(nodes: OrgNode[]): (OrgNode & { children: any[] })[] {
 
 function OrgCard({
   node,
-  search,
+  focusedId,
   isAdmin,
   onEdit,
   onDelete,
+  onSelect,
+  registerRef,
 }: {
   node: OrgNode & { children: any[] };
-  search: string;
+  focusedId: string | null;
   isAdmin: boolean;
   onEdit: (node: OrgNode) => void;
   onDelete: (id: string) => void;
+  onSelect: (id: string) => void;
+  registerRef: (id: string, el: HTMLDivElement | null) => void;
 }) {
   const initials = node.name.split(' ').map(w => w[0]).join('').slice(0, 2);
-  const highlighted = search && node.name.toLowerCase().includes(search.toLowerCase());
+  const isFocused = focusedId === node.id;
 
   return (
     <div className="flex flex-col items-center flex-shrink-0">
-      <div className={`relative rounded-xl border bg-card p-4 card-shadow hover:card-shadow-hover transition-all text-center w-48 ${highlighted ? 'ring-2 ring-primary' : ''}`}>
+      <div
+        ref={(el) => registerRef(node.id, el)}
+        onClick={() => onSelect(node.id)}
+        className="relative rounded-xl border bg-card p-4 card-shadow hover:card-shadow-hover transition-all text-center w-48 cursor-pointer"
+        style={isFocused ? { border: '2px solid #ef4444' } : undefined}
+      >
         {isAdmin && (
           <div className="absolute top-1 right-1 flex gap-0.5">
-            <button onClick={() => onEdit(node)} className="p-1 rounded hover:bg-muted transition-colors" title="Editar">
+            <button onClick={(e) => { e.stopPropagation(); onEdit(node); }} className="p-1 rounded hover:bg-muted transition-colors" title="Editar">
               <Pencil className="h-3 w-3 text-muted-foreground" />
             </button>
-            <button onClick={() => onDelete(node.id)} className="p-1 rounded hover:bg-destructive/10 transition-colors" title="Eliminar">
+            <button onClick={(e) => { e.stopPropagation(); onDelete(node.id); }} className="p-1 rounded hover:bg-destructive/10 transition-colors" title="Eliminar">
               <Trash2 className="h-3 w-3 text-destructive" />
             </button>
           </div>
@@ -70,7 +79,7 @@ function OrgCard({
             {node.children.map((child: any) => (
               <div key={child.id} className="relative flex flex-col items-center">
                 <div className="w-px h-6 bg-border" />
-                <OrgCard node={child} search={search} isAdmin={isAdmin} onEdit={onEdit} onDelete={onDelete} />
+                <OrgCard node={child} focusedId={focusedId} isAdmin={isAdmin} onEdit={onEdit} onDelete={onDelete} onSelect={onSelect} registerRef={registerRef} />
               </div>
             ))}
           </div>
@@ -83,19 +92,95 @@ function OrgCard({
 export default function OrganigramaPage() {
   const { orgNodes, users, currentUser, createOrgNode, updateOrgNode, removeOrgNode, completeOnboardingStep } = useAppStore();
   const isAdmin = currentUser.role === 'admin';
-  const active = orgNodes.filter((n) => !n.archived);
+
+  // Build org nodes from real users (active + activo). If a manual orgNode exists matching by name use it, else synthesize.
+  const realActiveUsers = useMemo(
+    () => users.filter((u) => u.active && u.status === 'activo'),
+    [users]
+  );
+
+  const active = useMemo(() => {
+    // Use orgNodes that correspond to real active users (match by name, case-insensitive)
+    return orgNodes.filter((n) => {
+      if (n.archived) return false;
+      return realActiveUsers.some((u) => u.name.toLowerCase() === n.name.toLowerCase());
+    });
+  }, [orgNodes, realActiveUsers]);
 
   const [search, setSearch] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editNode, setEditNode] = useState<OrgNode | null>(null);
   const [form, setForm] = useState({ userId: '', role: '', parentId: '', office: '' });
+  const [focusedId, setFocusedId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const nodeRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   useEffect(() => {
     completeOnboardingStep(currentUser.id, 'orgVisited');
   }, [currentUser.id, completeOnboardingStep]);
 
   const tree = useMemo(() => buildTree(active), [active]);
+
+  const registerRef = useCallback((id: string, el: HTMLDivElement | null) => {
+    nodeRefs.current[id] = el;
+  }, []);
+
+  const centerOnNode = useCallback((id: string) => {
+    const el = nodeRefs.current[id];
+    const container = scrollRef.current;
+    if (!el || !container) return;
+    const elRect = el.getBoundingClientRect();
+    const cRect = container.getBoundingClientRect();
+    const offsetLeft = el.offsetLeft - container.offsetLeft;
+    const targetLeft = offsetLeft - container.clientWidth / 2 + elRect.width / 2;
+    container.scrollTo({ left: targetLeft, behavior: 'smooth' });
+    const offsetTop = el.offsetTop - container.offsetTop;
+    const targetTop = offsetTop - container.clientHeight / 2 + elRect.height / 2;
+    container.scrollTo({ top: targetTop, behavior: 'smooth' });
+  }, []);
+
+  // Auto-center on current user on first load
+  useEffect(() => {
+    if (active.length === 0) return;
+    const myNode = active.find((n) => n.name.toLowerCase() === currentUser.name.toLowerCase());
+    const targetId = myNode?.id || active[0].id;
+    setFocusedId(targetId);
+    // delay to allow DOM to render
+    setTimeout(() => centerOnNode(targetId), 100);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active.length]);
+
+  // When focus changes, scroll into center
+  useEffect(() => {
+    if (focusedId) centerOnNode(focusedId);
+  }, [focusedId, centerOnNode]);
+
+  // Search: when matches exactly one or first match, center on it
+  useEffect(() => {
+    if (!search.trim()) return;
+    const match = active.find((n) => n.name.toLowerCase().includes(search.toLowerCase()));
+    if (match) setFocusedId(match.id);
+  }, [search, active]);
+
+  // Arrow navigation: parent (up), first child (down), prev/next sibling (left/right)
+  const navigate = (direction: 'up' | 'down' | 'left' | 'right') => {
+    if (!focusedId) return;
+    const current = active.find((n) => n.id === focusedId);
+    if (!current) return;
+    if (direction === 'up' && current.parentId) {
+      setFocusedId(current.parentId);
+      return;
+    }
+    if (direction === 'down') {
+      const child = active.find((n) => n.parentId === current.id);
+      if (child) setFocusedId(child.id);
+      return;
+    }
+    const siblings = active.filter((n) => n.parentId === current.parentId);
+    const idx = siblings.findIndex((n) => n.id === current.id);
+    if (direction === 'left' && idx > 0) setFocusedId(siblings[idx - 1].id);
+    if (direction === 'right' && idx < siblings.length - 1) setFocusedId(siblings[idx + 1].id);
+  };
 
   const availableUsers = users.filter(
     (u) => u.active && u.status === 'activo' && !active.some((n) => n.name === u.name)
@@ -155,9 +240,6 @@ export default function OrganigramaPage() {
     }));
   };
 
-  const scrollLeft = () => scrollRef.current?.scrollBy({ left: -300, behavior: 'smooth' });
-  const scrollRight = () => scrollRef.current?.scrollBy({ left: 300, behavior: 'smooth' });
-
   return (
     <div className="space-y-6">
       <PageHeader title="Organigrama" description="Estructura organizativa de CCC" />
@@ -174,26 +256,61 @@ export default function OrganigramaPage() {
         )}
       </div>
 
-      {/* Tree view with horizontal scroll arrows */}
+      {/* Tree view with arrow navigation */}
       <div className="relative">
+        {/* Arrow controls */}
         <button
-          onClick={scrollLeft}
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 rounded-full bg-card border border-border p-2 card-shadow hover:bg-muted transition-colors"
+          onClick={() => navigate('up')}
+          className="absolute left-1/2 -translate-x-1/2 top-2 z-10 rounded-full bg-card border border-border p-2 card-shadow hover:bg-muted transition-colors"
+          title="Arriba"
+        >
+          <ChevronUp className="h-5 w-5 text-foreground" />
+        </button>
+        <button
+          onClick={() => navigate('down')}
+          className="absolute left-1/2 -translate-x-1/2 bottom-2 z-10 rounded-full bg-card border border-border p-2 card-shadow hover:bg-muted transition-colors"
+          title="Abajo"
+        >
+          <ChevronDown className="h-5 w-5 text-foreground" />
+        </button>
+        <button
+          onClick={() => navigate('left')}
+          className="absolute left-2 top-1/2 -translate-y-1/2 z-10 rounded-full bg-card border border-border p-2 card-shadow hover:bg-muted transition-colors"
+          title="Izquierda"
         >
           <ChevronLeft className="h-5 w-5 text-foreground" />
         </button>
         <button
-          onClick={scrollRight}
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 rounded-full bg-card border border-border p-2 card-shadow hover:bg-muted transition-colors"
+          onClick={() => navigate('right')}
+          className="absolute right-2 top-1/2 -translate-y-1/2 z-10 rounded-full bg-card border border-border p-2 card-shadow hover:bg-muted transition-colors"
+          title="Derecha"
         >
           <ChevronRight className="h-5 w-5 text-foreground" />
         </button>
 
-        <div ref={scrollRef} className="overflow-x-auto rounded-xl border bg-card p-8 card-shadow scroll-smooth mx-8">
+        <div
+          ref={scrollRef}
+          className="org-scroll rounded-xl border bg-card p-8 card-shadow scroll-smooth mx-12"
+          style={{ maxHeight: '70vh', overflow: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
+          <style>{`.org-scroll::-webkit-scrollbar { display: none; }`}</style>
           <div className="flex justify-center gap-6 min-w-max">
-            {tree.map((root) => (
-              <OrgCard key={root.id} node={root} search={search} isAdmin={isAdmin} onEdit={openEdit} onDelete={handleDelete} />
-            ))}
+            {tree.length === 0 ? (
+              <p className="text-muted-foreground text-sm py-8">No hay usuarios en el organigrama</p>
+            ) : (
+              tree.map((root) => (
+                <OrgCard
+                  key={root.id}
+                  node={root}
+                  focusedId={focusedId}
+                  isAdmin={isAdmin}
+                  onEdit={openEdit}
+                  onDelete={handleDelete}
+                  onSelect={setFocusedId}
+                  registerRef={registerRef}
+                />
+              ))
+            )}
           </div>
         </div>
       </div>

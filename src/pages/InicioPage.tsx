@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight, Clock, Layers, BookOpen, Shield, Gift, Netwo
 import { Button } from '@/components/ui/button';
 import WelcomeModal from '@/components/shared/WelcomeModal';
 import ProfileSetupModal from '@/components/shared/ProfileSetupModal';
+import welcomeBanner from '@/assets/welcome-banner.jpg';
 
 const cardColors = ['#1C44AE', '#4CA387', '#E18F35', '#1C44AE', '#4CA387', '#E18F35'];
 
@@ -75,7 +76,7 @@ const relevantDocs = [
 ];
 
 export default function InicioPage() {
-  const { communications } = useAppStore();
+  const { communications, currentUser } = useAppStore();
   const navigate = useNavigate();
   const [carouselIndex, setCarouselIndex] = useState(0);
 
@@ -90,10 +91,30 @@ export default function InicioPage() {
       <ProfileSetupModal />
       <WelcomeModal />
 
+      {/* Welcome banner */}
+      <section className="relative overflow-hidden rounded-2xl">
+        <img
+          src={welcomeBanner}
+          alt="Bienvenida"
+          width={1920}
+          height={640}
+          className="w-full h-48 sm:h-56 object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-secondary/60 via-secondary/20 to-background" />
+        <div className="absolute inset-0 flex flex-col justify-center px-6 sm:px-10">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white drop-shadow">
+            Bienvenido/a, {currentUser.name.split(' ')[0]}
+          </h1>
+          <p className="text-sm sm:text-base text-white/90 mt-1 drop-shadow max-w-xl">
+            Accede a tus comunicados, formación y recursos de la intranet CCC.
+          </p>
+        </div>
+      </section>
+
       {/* Anuncios recientes */}
       <section>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-secondary">Anuncios recientes</h2>
+          <h2 className="text-xl font-semibold text-secondary">Comunicados y noticias recientes</h2>
           {activeCommunications.length > 0 && (
             <Button variant="ghost" size="sm" className="gap-1 text-primary" onClick={() => navigate('/comunicaciones')}>
               Ver todos <ArrowRight className="h-4 w-4" />
@@ -107,12 +128,20 @@ export default function InicioPage() {
           </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {activeCommunications.slice(0, 6).map((comm) => (
+            {activeCommunications.slice(0, 6).map((comm) => {
+              const isNoticia = comm.kind === 'noticia';
+              return (
               <div
                 key={comm.id}
                 className="rounded-xl border border-border bg-card p-5 cursor-pointer hover:shadow-md transition-shadow"
                 onClick={() => navigate('/comunicaciones')}
               >
+                <span
+                  className="inline-block text-xs font-semibold text-white px-2 py-0.5 rounded-md mb-3"
+                  style={{ backgroundColor: isNoticia ? '#1C44AE' : '#E18F35' }}
+                >
+                  {isNoticia ? 'Noticia' : 'Comunicado'}
+                </span>
                 <div className="flex items-center gap-3 mb-3">
                   <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10">
                     <span className="text-xs font-bold text-primary">
@@ -127,7 +156,8 @@ export default function InicioPage() {
                 {comm.title && <h3 className="font-semibold text-card-foreground mb-1">{comm.title}</h3>}
                 <p className="text-sm text-muted-foreground line-clamp-2">{comm.content}</p>
               </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </section>
