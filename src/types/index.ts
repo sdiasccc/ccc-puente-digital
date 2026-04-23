@@ -1,11 +1,12 @@
 // ============ User & Auth ============
-export type UserRole = 'admin' | 'hr_team' | 'employee';
+export type UserRole = 'admin' | 'support' | 'hr_team' | 'employee';
 export type UserStatus = 'pendiente' | 'activo';
 
 export interface User {
   id: string;
   name: string;
   email: string;
+  password?: string;
   department: string;
   office: string;
   cargo?: string;
@@ -72,6 +73,7 @@ export interface Document {
   author: string;
   fileType: 'pdf' | 'doc' | 'image';
   fileUrl?: string;
+  link?: string;
   version: number;
   downloads: number;
   roles: UserRole[];
@@ -136,4 +138,18 @@ export interface CrudActions<T> {
   update: (id: string, item: Partial<T>) => void;
   archive: (id: string) => void;
   remove: (id: string) => void;
+}
+
+// ============ Audit ============
+export type AuditAction = 'create' | 'delete' | 'update' | 'activate' | 'deactivate';
+export type AuditEntity = 'user' | 'document' | 'course' | 'communication';
+
+export interface AuditEntry {
+  id: string;
+  action: AuditAction;
+  entity: AuditEntity;
+  entityName: string;
+  performedBy: string;
+  performedById: string;
+  date: string;
 }

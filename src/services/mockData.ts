@@ -1,12 +1,13 @@
 import type { User, Notification, Communication, Document, Course, FAQItem, Benefit, OrgNode, Highlight } from '@/types';
 
 export const mockUser: User = {
-  id: '1',
-  name: 'Carlos García',
-  email: 'carlos.garcia@ccc.com',
-  department: 'Tecnología',
+  id: 'u-admin',
+  name: 'Administrador CCC',
+  email: 'admin@cursosccc.com',
+  password: '1234',
+  department: 'Dirección',
   office: 'Madrid',
-  cargo: 'Lead Developer',
+  cargo: 'Administrador',
   role: 'admin',
   active: true,
   status: 'activo',
@@ -15,9 +16,8 @@ export const mockUser: User = {
 
 export const mockUsers: User[] = [
   mockUser,
-  { id: '2', name: 'María Fernández', email: 'maria@ccc.com', department: 'RRHH', office: 'Madrid', cargo: 'Directora de RRHH', role: 'hr_team', active: true, status: 'activo', firstLogin: false },
-  { id: '3', name: 'Pedro López', email: 'pedro@ccc.com', department: 'Tecnología', office: 'Madrid', cargo: 'Desarrollador', role: 'employee', active: true, status: 'activo', firstLogin: false },
-  { id: '4', name: 'Laura Sánchez', email: 'laura@ccc.com', department: 'Diseño', office: 'Barcelona', cargo: 'Diseñadora UX', role: 'employee', active: false, status: 'activo', firstLogin: false },
+  { id: 'u-base', name: 'Usuario Base', email: 'usuariobase@cursosccc.com', password: '1234', department: 'General', office: 'Madrid', cargo: 'Empleado', role: 'employee', active: true, status: 'activo', firstLogin: false },
+  { id: 'u-support', name: 'Soporte CCC', email: 'soporte@cursosccc.com', password: '1234', department: 'Soporte', office: 'Madrid', cargo: 'Soporte técnico', role: 'support', active: true, status: 'activo', firstLogin: false },
 ];
 
 export const mockNotifications: Notification[] = [];
@@ -70,7 +70,26 @@ export const mockHighlights: Highlight[] = [
 ];
 
 export const rolePermissions: Record<string, string[]> = {
-  admin: ['manage_users', 'publish_communications', 'upload_documents', 'manage_notifications', 'edit_orgchart', 'view_content', 'download_documents', 'open_support', 'manage_cms'],
-  hr_team: ['publish_communications', 'upload_documents', 'manage_benefits', 'manage_training', 'view_content', 'download_documents', 'open_support', 'manage_cms'],
-  employee: ['view_content', 'download_documents', 'open_support'],
+  admin: [
+    'view_profile', 'edit_profile_basic',
+    'view_communications', 'manage_communications',
+    'manage_users_status', 'manage_documents', 'manage_courses',
+    'view_content', 'download_documents', 'open_support', 'manage_cms',
+    'view_notifications',
+  ],
+  support: [
+    'view_profile', 'edit_profile_basic',
+    'view_communications', 'manage_communications',
+    'manage_users_status', 'manage_documents', 'manage_courses',
+    'view_content', 'download_documents', 'open_support', 'manage_cms',
+    'view_notifications', 'view_history',
+  ],
+  hr_team: [
+    'view_profile', 'edit_profile_basic',
+    'view_communications', 'manage_communications',
+    'manage_documents', 'manage_courses',
+    'view_content', 'download_documents', 'open_support', 'manage_cms',
+    'view_notifications',
+  ],
+  employee: ['view_profile', 'edit_profile_basic'],
 };
