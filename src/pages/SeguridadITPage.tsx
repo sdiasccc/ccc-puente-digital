@@ -19,11 +19,24 @@ interface SupportForm {
 }
 
 export default function SeguridadITPage() {
-  const { faqs } = useAppStore();
+  const { faqs, users, createNotification } = useAppStore();
   const activeFaqs = faqs.filter((f) => !f.archived);
   const { register, handleSubmit, reset } = useForm<SupportForm>();
 
-  const onSubmit = () => {
+  const onSubmit = (data: SupportForm) => {
+    // Notify all support users (in-app). Email hook left for future integration.
+    const supportUsers = users.filter((u) => u.role === 'support' && u.active);
+    supportUsers.forEach((u) => {
+      createNotification({
+        title: `Nueva solicitud de soporte IT: ${data.subject}`,
+        message: `${data.name} (${data.department}) — ${data.message}`,
+        date: new Date().toISOString().split('T')[0],
+        read: false,
+        type: 'info',
+        targetUserId: u.id,
+      });
+    });
+    // TODO: hook for email delivery (reserved for critical/personal channels only).
     toast.success('Solicitud enviada correctamente. Te contactaremos pronto.');
     reset();
   };
