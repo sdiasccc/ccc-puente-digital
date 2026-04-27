@@ -62,7 +62,7 @@ export default function AppHeader() {
       )}
 
       <div className="flex items-center gap-2">
-        {!isEmployee && (
+        {(!isEmployee || visibleNotifications.length > 0) && (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="relative rounded-md p-2 hover:bg-sidebar-accent">
