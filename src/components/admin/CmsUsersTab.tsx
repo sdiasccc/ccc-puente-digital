@@ -10,15 +10,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Plus, CheckCircle } from 'lucide-react';
+import { Plus, CheckCircle, Lock } from 'lucide-react';
 import { toast } from 'sonner';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { isValidCccEmail, EMAIL_VALIDATION_MESSAGE } from '@/lib/emailValidation';
 import type { User, UserRole } from '@/types';
 
 const roleLabels: Record<string, string> = { admin: 'Admin', support: 'Soporte', hr_team: 'RRHH', employee: 'Empleado' };
 
 export default function CmsUsersTab() {
-  const { users, createUser, updateUser, activateUser } = useAppStore();
+  const { users, createUser, updateUser, activateUser, currentUser } = useAppStore();
+  const isAdminOnly = currentUser.role === 'admin'; // support has full edit
   const [search, setSearch] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<User | null>(null);
@@ -41,15 +43,26 @@ export default function CmsUsersTab() {
   };
 
   const handleSubmit = () => {
-    if (!form.name || !form.email) return;
-    if (!isValidCccEmail(form.email)) {
-      toast.error(EMAIL_VALIDATION_MESSAGE);
-      return;
-    }
     if (editing) {
-      updateUser(editing.id, form);
-      toast.success('Usuario actualizado');
+      if (isAdminOnly) {
+        // Admin can only change the role of existing users
+        updateUser(editing.id, { role: form.role });
+        toast.success('Rol actualizado');
+      } else {
+        if (!form.name || !form.email) return;
+        if (!isValidCccEmail(form.email)) {
+          toast.error(EMAIL_VALIDATION_MESSAGE);
+          return;
+        }
+        updateUser(editing.id, form);
+        toast.success('Usuario actualizado');
+      }
     } else {
+      if (!form.name || !form.email) return;
+      if (!isValidCccEmail(form.email)) {
+        toast.error(EMAIL_VALIDATION_MESSAGE);
+        return;
+      }
       createUser({ ...form, active: true, status: 'activo' });
       toast.success('Usuario creado');
     }
@@ -119,22 +132,80 @@ export default function CmsUsersTab() {
       />
 
       <FormDialog open={dialogOpen} onOpenChange={setDialogOpen} title={editing ? 'Editar usuario' : 'Nuevo usuario'} onSubmit={handleSubmit}>
-        <div className="space-y-2"><Label>Nombre</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
-        <div className="space-y-2"><Label>Email</Label><Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></div>
-        <div className="space-y-2"><Label>Departamento</Label><Input value={form.department} onChange={(e) => setForm({ ...form, department: e.target.value })} /></div>
-        <div className="space-y-2"><Label>Oficina</Label><Input value={form.office} onChange={(e) => setForm({ ...form, office: e.target.value })} /></div>
-        <div className="space-y-2">
-          <Label>Rol</Label>
-          <Select value={form.role} onValueChange={(v) => setForm({ ...form, role: v as UserRole })}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="admin">Admin</SelectItem>
-              <SelectItem value="support">Soporte</SelectItem>
-              <SelectItem value="hr_team">RRHH</SelectItem>
-              <SelectItem value="employee">Empleado</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        {(() => {
+          const lockPersonal = isAdminOnly && !!editing;
+          const lockedClass = 'bg-muted text-muted-foreground cursor-not-allowed';
+          const renderField = (label: string, node: React.ReactNode) => {
+            if (!lockPersonal) {
+              return <div className="space-y-2"><Label>{label}</Label>{node}</div>;
+            }
+            return (
+              <TooltipProvider delayDuration={150}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="space-y-2">
+                      <Label className="text-muted-foreground flex items-center gap-1">
+                        <Lock className="h-3 w-3" /> {label}
+                      </Label>
+                      {node}
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>No tienes permiso para editar este campo</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            );
+          };
+
+          return (
+            <>
+              {renderField('Nombre', (
+                <Input
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  readOnly={lockPersonal}
+                  className={lockPersonal ? lockedClass : ''}
+                />
+              ))}
+              {renderField('Email', (
+                <Input
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  readOnly={lockPersonal}
+                  className={lockPersonal ? lockedClass : ''}
+                />
+              ))}
+              {renderField('Departamento', (
+                <Input
+                  value={form.department}
+                  onChange={(e) => setForm({ ...form, department: e.target.value })}
+                  readOnly={lockPersonal}
+                  className={lockPersonal ? lockedClass : ''}
+                />
+              ))}
+              {renderField('Oficina', (
+                <Input
+                  value={form.office}
+                  onChange={(e) => setForm({ ...form, office: e.target.value })}
+                  readOnly={lockPersonal}
+                  className={lockPersonal ? lockedClass : ''}
+                />
+              ))}
+              <div className="space-y-2">
+                <Label>Rol</Label>
+                <Select value={form.role} onValueChange={(v) => setForm({ ...form, role: v as UserRole })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="admin">Admin</SelectItem>
+                    <SelectItem value="support">Soporte</SelectItem>
+                    <SelectItem value="hr_team">RRHH</SelectItem>
+                    <SelectItem value="employee">Empleado</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </>
+          );
+        })()}
       </FormDialog>
     </div>
   );
