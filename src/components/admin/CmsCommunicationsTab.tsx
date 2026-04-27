@@ -15,7 +15,7 @@ import { toast } from 'sonner';
 import type { Communication } from '@/types';
 
 export default function CmsCommunicationsTab() {
-  const { communications, createCommunication, updateCommunication, archiveCommunication, removeCommunication } = useAppStore();
+  const { communications, createCommunication, updateCommunication, archiveCommunication, removeCommunication, users, createNotification } = useAppStore();
   const [search, setSearch] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -35,6 +35,20 @@ export default function CmsCommunicationsTab() {
       toast.success('Comunicado actualizado');
     } else {
       createCommunication({ ...form, date: new Date().toISOString().split('T')[0] });
+      // In-app notification to all base users (no email).
+      const today = new Date().toISOString().split('T')[0];
+      users
+        .filter((u) => u.role === 'employee' && u.active)
+        .forEach((u) => {
+          createNotification({
+            title: `Nuevo comunicado: ${form.title}`,
+            message: form.content.slice(0, 140),
+            date: today,
+            read: false,
+            type: 'info',
+            targetUserId: u.id,
+          });
+        });
       toast.success('Comunicado publicado');
     }
     setDialogOpen(false);
