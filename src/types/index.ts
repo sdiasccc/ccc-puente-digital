@@ -37,6 +37,7 @@ export interface Notification {
   date: string;
   read: boolean;
   type: NotificationType;
+  targetUserId?: string;
 }
 
 // ============ Communications ============

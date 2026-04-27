@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useRef } from 'react';
 import PageHeader from '@/components/shared/PageHeader';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Users, Megaphone, FileText, Bell, GraduationCap, HelpCircle, Gift, Network, Star, History } from 'lucide-react';
+import { Users, Megaphone, FileText, Bell, GraduationCap, HelpCircle, Gift, Network, Star, History, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAppStore } from '@/stores/useAppStore';
 import CmsUsersTab from '@/components/admin/CmsUsersTab';
 import CmsCommunicationsTab from '@/components/admin/CmsCommunicationsTab';
@@ -18,6 +18,13 @@ export default function AdminPage() {
   const { hasPermission, currentUser } = useAppStore();
   const canManage = hasPermission('manage_cms');
   const canViewHistory = currentUser.role === 'support';
+  const tabsScrollRef = useRef<HTMLDivElement>(null);
+
+  const scrollTabs = (dir: 'left' | 'right') => {
+    const el = tabsScrollRef.current;
+    if (!el) return;
+    el.scrollBy({ left: dir === 'left' ? -200 : 200, behavior: 'smooth' });
+  };
 
   const tabs = [
     { id: 'users', label: 'Usuarios', icon: Users },
@@ -48,14 +55,37 @@ export default function AdminPage() {
       />
 
       <Tabs defaultValue="users">
-        <div className="overflow-x-auto -mx-6 px-6">
-          <TabsList className="bg-muted inline-flex w-auto">
-            {tabs.map((t) => (
-              <TabsTrigger key={t.id} value={t.id} className="gap-2 data-[state=active]:bg-card whitespace-nowrap">
-                <t.icon className="h-4 w-4" /> <span className="hidden sm:inline">{t.label}</span>
-              </TabsTrigger>
-            ))}
-          </TabsList>
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => scrollTabs('left')}
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 rounded-full bg-card border border-border p-1.5 card-shadow hover:bg-muted transition-colors"
+            aria-label="Anterior"
+          >
+            <ChevronLeft className="h-4 w-4 text-foreground" />
+          </button>
+          <button
+            type="button"
+            onClick={() => scrollTabs('right')}
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 rounded-full bg-card border border-border p-1.5 card-shadow hover:bg-muted transition-colors"
+            aria-label="Siguiente"
+          >
+            <ChevronRight className="h-4 w-4 text-foreground" />
+          </button>
+          <div
+            ref={tabsScrollRef}
+            className="admin-tabs-scroll mx-10 overflow-x-auto"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
+            <style>{`.admin-tabs-scroll::-webkit-scrollbar { display: none; }`}</style>
+            <TabsList className="bg-muted inline-flex w-auto">
+              {tabs.map((t) => (
+                <TabsTrigger key={t.id} value={t.id} className="gap-2 data-[state=active]:bg-card whitespace-nowrap">
+                  <t.icon className="h-4 w-4" /> <span className="hidden sm:inline">{t.label}</span>
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </div>
         </div>
 
         <TabsContent value="users" className="mt-4"><CmsUsersTab /></TabsContent>

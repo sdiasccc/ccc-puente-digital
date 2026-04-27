@@ -328,7 +328,7 @@ export const useAppStore = create<AppState>()(
       },
     }),
     {
-      name: 'intranet-ccc-storage-v2',
+      name: 'intranet-ccc-storage-v3',
       partialize: (state) => ({
         users: state.users,
         notifications: state.notifications,

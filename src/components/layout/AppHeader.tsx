@@ -15,8 +15,14 @@ import { useNavigate } from 'react-router-dom';
 export default function AppHeader() {
   const { currentUser, notifications, toggleSidebar, logout } = useAppStore();
   const navigate = useNavigate();
-  const unreadCount = notifications.filter((n) => !n.read).length;
   const isEmployee = currentUser.role === 'employee';
+  // A notification is visible to a user if it targets them specifically,
+  // or if it has no target and the user is staff (admin/support/hr_team).
+  const visibleNotifications = notifications.filter((n) => {
+    if (n.targetUserId) return n.targetUserId === currentUser.id;
+    return !isEmployee;
+  });
+  const unreadCount = visibleNotifications.filter((n) => !n.read).length;
 
   const initials = currentUser.name
     .split(' ')
@@ -56,7 +62,7 @@ export default function AppHeader() {
       )}
 
       <div className="flex items-center gap-2">
-        {!isEmployee && (
+        {(!isEmployee || visibleNotifications.length > 0) && (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="relative rounded-md p-2 hover:bg-sidebar-accent">
@@ -71,13 +77,13 @@ export default function AppHeader() {
           <DropdownMenuContent align="end" className="w-80">
             <div className="px-3 py-2 font-semibold text-sm">Notificaciones</div>
             <DropdownMenuSeparator />
-            {notifications.length === 0 ? (
+            {visibleNotifications.length === 0 ? (
               <div className="flex flex-col items-center gap-2 py-6 text-muted-foreground">
                 <BellOff className="h-8 w-8 opacity-40" />
                 <p className="text-sm">Panel de notificaciones vacío</p>
               </div>
             ) : (
-              notifications.slice(0, 5).map((n) => (
+              visibleNotifications.slice(0, 5).map((n) => (
                 <DropdownMenuItem key={n.id} className="flex flex-col items-start gap-1 p-3">
                   <span className={`text-sm font-medium ${n.read ? 'text-muted-foreground' : 'text-foreground'}`}>
                     {n.title}
