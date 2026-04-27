@@ -20,7 +20,6 @@ const allNavItems = [
   { label: 'Seguridad IT', icon: Shield, path: '/seguridad-it', employeeAllowed: false },
   { label: 'Beneficios sociales', icon: Gift, path: '/beneficios', employeeAllowed: false },
   { label: 'Organigrama', icon: Network, path: '/organigrama', employeeAllowed: false },
-  { label: 'Mi perfil', icon: UserIcon, path: '/perfil', employeeAllowed: true },
 ];
 
 export default function AppSidebar() {
