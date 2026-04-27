@@ -87,15 +87,11 @@
   }
 }
 
-/* Global section hover: solid red border on main sections to highlight active area */
-main .rounded-xl,
-main .rounded-2xl,
-main section {
+/* Admin-only hover: solid red border on interactive nav/cards inside Admin area */
+.admin-hover-target {
   transition: border-color 150ms ease, box-shadow 150ms ease;
 }
-main .rounded-xl:hover,
-main .rounded-2xl:hover,
-main section:hover {
+.admin-hover-target:hover {
   border-color: hsl(var(--primary)) !important;
   border-width: 1px;
   border-style: solid;

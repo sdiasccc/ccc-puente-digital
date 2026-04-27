@@ -59,7 +59,7 @@ export default function AdminPage() {
           <button
             type="button"
             onClick={() => scrollTabs('left')}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 rounded-full bg-card border border-border p-1.5 card-shadow hover:bg-muted transition-colors"
+            className="admin-hover-target absolute left-0 top-1/2 -translate-y-1/2 z-10 rounded-full bg-card border border-border p-1.5 card-shadow hover:bg-muted transition-colors"
             aria-label="Anterior"
           >
             <ChevronLeft className="h-4 w-4 text-foreground" />
@@ -67,7 +67,7 @@ export default function AdminPage() {
           <button
             type="button"
             onClick={() => scrollTabs('right')}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 rounded-full bg-card border border-border p-1.5 card-shadow hover:bg-muted transition-colors"
+            className="admin-hover-target absolute right-0 top-1/2 -translate-y-1/2 z-10 rounded-full bg-card border border-border p-1.5 card-shadow hover:bg-muted transition-colors"
             aria-label="Siguiente"
           >
             <ChevronRight className="h-4 w-4 text-foreground" />
@@ -80,7 +80,7 @@ export default function AdminPage() {
             <style>{`.admin-tabs-scroll::-webkit-scrollbar { display: none; }`}</style>
             <TabsList className="bg-muted inline-flex w-auto">
               {tabs.map((t) => (
-                <TabsTrigger key={t.id} value={t.id} className="gap-2 data-[state=active]:bg-card whitespace-nowrap">
+                <TabsTrigger key={t.id} value={t.id} className="admin-hover-target gap-2 data-[state=active]:bg-card whitespace-nowrap border border-transparent">
                   <t.icon className="h-4 w-4" /> <span className="hidden sm:inline">{t.label}</span>
                 </TabsTrigger>
               ))}
