@@ -268,43 +268,31 @@ export default function OrganigramaPage() {
         )}
       </div>
 
-      {/* Tree view with arrow navigation */}
-      <div className="relative">
-        {/* Arrow controls */}
-        <button
-          onClick={() => navigate('up')}
-          className="absolute left-1/2 -translate-x-1/2 top-2 z-10 rounded-full bg-card border border-border p-2 card-shadow hover:bg-muted transition-colors"
-          title="Arriba"
-        >
-          <ChevronUp className="h-5 w-5 text-foreground" />
-        </button>
-        <button
-          onClick={() => navigate('down')}
-          className="absolute left-1/2 -translate-x-1/2 bottom-2 z-10 rounded-full bg-card border border-border p-2 card-shadow hover:bg-muted transition-colors"
-          title="Abajo"
-        >
-          <ChevronDown className="h-5 w-5 text-foreground" />
-        </button>
-        <button
-          onClick={() => navigate('left')}
-          className="absolute left-2 top-1/2 -translate-y-1/2 z-10 rounded-full bg-card border border-border p-2 card-shadow hover:bg-muted transition-colors"
-          title="Izquierda"
-        >
-          <ChevronLeft className="h-5 w-5 text-foreground" />
-        </button>
-        <button
-          onClick={() => navigate('right')}
-          className="absolute right-2 top-1/2 -translate-y-1/2 z-10 rounded-full bg-card border border-border p-2 card-shadow hover:bg-muted transition-colors"
-          title="Derecha"
-        >
-          <ChevronRight className="h-5 w-5 text-foreground" />
-        </button>
-
-        <div
-          ref={scrollRef}
-          className="org-scroll rounded-xl border bg-card p-8 card-shadow scroll-smooth mx-12"
-          style={{ maxHeight: '70vh', overflow: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-        >
+      {/* Tree view with external arrow navigation */}
+      <div className="space-y-2">
+        {/* Top arrow (outside container) */}
+        <div className="flex justify-center">
+          <button
+            onClick={() => navigate('up')}
+            className="rounded-full bg-card border border-border p-2 card-shadow hover:bg-muted transition-colors"
+            title="Arriba"
+          >
+            <ChevronUp className="h-5 w-5 text-foreground" />
+          </button>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => navigate('left')}
+            className="flex-shrink-0 rounded-full bg-card border border-border p-2 card-shadow hover:bg-muted transition-colors"
+            title="Izquierda"
+          >
+            <ChevronLeft className="h-5 w-5 text-foreground" />
+          </button>
+          <div
+            ref={scrollRef}
+            className="org-scroll flex-1 rounded-xl border bg-card p-8 card-shadow scroll-smooth"
+            style={{ maxHeight: '70vh', overflow: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
           <style>{`.org-scroll::-webkit-scrollbar { display: none; }`}</style>
           <div className="flex justify-center gap-6 min-w-max">
             {tree.length === 0 ? (
@@ -324,6 +312,23 @@ export default function OrganigramaPage() {
               ))
             )}
           </div>
+          </div>
+          <button
+            onClick={() => navigate('right')}
+            className="flex-shrink-0 rounded-full bg-card border border-border p-2 card-shadow hover:bg-muted transition-colors"
+            title="Derecha"
+          >
+            <ChevronRight className="h-5 w-5 text-foreground" />
+          </button>
+        </div>
+        <div className="flex justify-center">
+          <button
+            onClick={() => navigate('down')}
+            className="rounded-full bg-card border border-border p-2 card-shadow hover:bg-muted transition-colors"
+            title="Abajo"
+          >
+            <ChevronDown className="h-5 w-5 text-foreground" />
+          </button>
         </div>
       </div>
 
