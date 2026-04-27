@@ -1,69 +1,101 @@
-import { useState } from 'react';
+import { useMemo } from 'react';
 import { useAppStore } from '@/stores/useAppStore';
-import DataTable from '@/components/shared/DataTable';
-import FormDialog from '@/components/shared/FormDialog';
-import ConfirmDialog from '@/components/shared/ConfirmDialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus } from 'lucide-react';
-import { toast } from 'sonner';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Lock, MapPin } from 'lucide-react';
 import type { OrgNode } from '@/types';
 
+function buildTree(nodes: OrgNode[]): (OrgNode & { children: any[] })[] {
+  const map: Record<string, OrgNode & { children: any[] }> = {};
+  const roots: (OrgNode & { children: any[] })[] = [];
+  nodes.forEach((n) => { map[n.id] = { ...n, children: [] }; });
+  nodes.forEach((n) => {
+    if (n.parentId && map[n.parentId]) map[n.parentId].children.push(map[n.id]);
+    else roots.push(map[n.id]);
+  });
+  return roots;
+}
+
+function ReadOnlyCard({ node }: { node: OrgNode & { children: any[] } }) {
+  const initials = node.name.split(' ').map(w => w[0]).join('').slice(0, 2);
+  return (
+    <div className="flex flex-col items-center flex-shrink-0">
+      <div className="rounded-xl border bg-card p-4 card-shadow text-center w-48 cursor-not-allowed select-none opacity-95">
+        <Avatar className="mx-auto h-12 w-12 mb-2">
+          {node.avatar && <AvatarImage src={node.avatar} />}
+          <AvatarFallback className="bg-primary/10 text-primary font-semibold">{initials}</AvatarFallback>
+        </Avatar>
+        <h4 className="font-semibold text-sm text-card-foreground">{node.name}</h4>
+        <p className="text-xs text-primary font-medium">{node.role}</p>
+        {node.office && (
+          <div className="flex items-center justify-center gap-1 mt-1 text-xs text-muted-foreground">
+            <MapPin className="h-3 w-3" /> Sede {node.office}
+          </div>
+        )}
+      </div>
+      {node.children.length > 0 && (
+        <>
+          <div className="w-px h-6 bg-border" />
+          <div className="flex gap-3">
+            {node.children.map((child: any) => (
+              <div key={child.id} className="relative flex flex-col items-center">
+                <div className="w-px h-6 bg-border" />
+                <ReadOnlyCard node={child} />
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 export default function CmsOrgChartTab() {
-  const { orgNodes, createOrgNode, updateOrgNode, removeOrgNode } = useAppStore();
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [editing, setEditing] = useState<OrgNode | null>(null);
-  const [form, setForm] = useState({ name: '', role: '', department: '', office: '', parentId: '' });
+  const { orgNodes, users } = useAppStore();
 
-  const active = orgNodes.filter((n) => !n.archived);
+  // Mismo origen de datos que OrganigramaPage para sincronización en tiempo real
+  const realActiveUsers = useMemo(
+    () => users.filter((u) => u.active && u.status === 'activo'),
+    [users]
+  );
 
-  const openCreate = () => { setEditing(null); setForm({ name: '', role: '', department: '', office: '', parentId: '' }); setDialogOpen(true); };
-  const openEdit = (n: OrgNode) => { setEditing(n); setForm({ name: n.name, role: n.role, department: n.department, office: n.office, parentId: n.parentId || '' }); setDialogOpen(true); };
+  const active = useMemo(() => {
+    const matched = orgNodes.filter((n) => {
+      if (n.archived) return false;
+      return realActiveUsers.some((u) => u.name.toLowerCase() === n.name.toLowerCase());
+    });
+    const synthesized: OrgNode[] = realActiveUsers
+      .filter((u) => !matched.some((n) => n.name.toLowerCase() === u.name.toLowerCase()))
+      .map((u) => ({
+        id: `synth-${u.id}`,
+        name: u.name,
+        role: u.cargo || u.role,
+        department: u.department,
+        office: u.office,
+        avatar: u.avatar,
+      }));
+    return [...matched, ...synthesized];
+  }, [orgNodes, realActiveUsers]);
 
-  const handleSubmit = () => {
-    if (!form.name || !form.role) return;
-    const data = { ...form, parentId: form.parentId || undefined };
-    if (editing) { updateOrgNode(editing.id, data); toast.success('Nodo actualizado'); }
-    else { createOrgNode(data); toast.success('Nodo creado'); }
-    setDialogOpen(false);
-  };
+  const tree = useMemo(() => buildTree(active), [active]);
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-end"><Button className="gap-2" onClick={openCreate}><Plus className="h-4 w-4" /> Nuevo nodo</Button></div>
-      <DataTable keyExtractor={(n) => n.id} data={active} columns={[
-        { key: 'name', header: 'Nombre', render: (n) => <span className="font-medium text-card-foreground">{n.name}</span> },
-        { key: 'role', header: 'Cargo', render: (n) => <span className="text-muted-foreground">{n.role}</span> },
-        { key: 'dept', header: 'Departamento', render: (n) => <span className="text-muted-foreground">{n.department}</span> },
-        { key: 'office', header: 'Oficina', render: (n) => <span className="text-muted-foreground">{n.office}</span> },
-        { key: 'parent', header: 'Reporta a', render: (n) => <span className="text-muted-foreground">{active.find(p => p.id === n.parentId)?.name || '—'}</span> },
-        { key: 'actions', header: 'Acciones', render: (n) => (
-          <div className="flex gap-1">
-            <Button variant="ghost" size="sm" onClick={() => openEdit(n)}>Editar</Button>
-            <Button variant="ghost" size="sm" className="text-destructive" onClick={() => setDeleteId(n.id)}>Eliminar</Button>
-          </div>
-        )},
-      ]} />
-      <FormDialog open={dialogOpen} onOpenChange={setDialogOpen} title={editing ? 'Editar nodo' : 'Nuevo nodo'} onSubmit={handleSubmit}>
-        <div className="space-y-2"><Label>Nombre</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
-        <div className="space-y-2"><Label>Cargo</Label><Input value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })} /></div>
-        <div className="space-y-2"><Label>Departamento</Label><Input value={form.department} onChange={(e) => setForm({ ...form, department: e.target.value })} /></div>
-        <div className="space-y-2"><Label>Oficina</Label><Input value={form.office} onChange={(e) => setForm({ ...form, office: e.target.value })} /></div>
-        <div className="space-y-2">
-          <Label>Reporta a</Label>
-          <Select value={form.parentId} onValueChange={(v) => setForm({ ...form, parentId: v })}>
-            <SelectTrigger><SelectValue placeholder="Ninguno (raíz)" /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="">Ninguno (raíz)</SelectItem>
-              {active.filter(n => n.id !== editing?.id).map(n => <SelectItem key={n.id} value={n.id}>{n.name} - {n.role}</SelectItem>)}
-            </SelectContent>
-          </Select>
+      <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/40 p-3 text-sm text-muted-foreground">
+        <Lock className="h-4 w-4" />
+        Vista sincronizada en tiempo real con el organigrama principal. <strong className="text-foreground">Solo lectura</strong> — para editar, usa la sección Organigrama.
+      </div>
+      <div
+        className="org-readonly-scroll rounded-xl border bg-card p-8 card-shadow"
+        style={{ maxHeight: '70vh', overflow: 'auto' }}
+      >
+        <div className="flex justify-center gap-6 min-w-max">
+          {tree.length === 0 ? (
+            <p className="text-muted-foreground text-sm py-8">No hay usuarios en el organigrama</p>
+          ) : (
+            tree.map((root) => <ReadOnlyCard key={root.id} node={root} />)
+          )}
         </div>
-      </FormDialog>
-      <ConfirmDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)} title="Eliminar nodo" description="¿Estás seguro?" onConfirm={() => { removeOrgNode(deleteId!); toast.success('Eliminado'); setDeleteId(null); }} confirmLabel="Eliminar" destructive />
+      </div>
     </div>
   );
 }
