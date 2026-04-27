@@ -13,12 +13,12 @@ import { cn } from '@/lib/utils';
 
 const allNavItems = [
   { label: 'Inicio', icon: Home, path: '/', employeeAllowed: true },
-  { label: 'Payfit', icon: Clock, path: '/payfit', employeeAllowed: false },
-  { label: 'Comunicaciones', icon: Megaphone, path: '/comunicaciones', employeeAllowed: false },
-  { label: 'Cursos obligatorios', icon: GraduationCap, path: '/cursos', employeeAllowed: false },
-  { label: 'Seguridad IT', icon: Shield, path: '/seguridad-it', employeeAllowed: false },
-  { label: 'Beneficios sociales', icon: Gift, path: '/beneficios', employeeAllowed: false },
-  { label: 'Organigrama', icon: Network, path: '/organigrama', employeeAllowed: false },
+  { label: 'Payfit', icon: Clock, path: '/payfit', employeeAllowed: true },
+  { label: 'Comunicaciones', icon: Megaphone, path: '/comunicaciones', employeeAllowed: true },
+  { label: 'Cursos obligatorios', icon: GraduationCap, path: '/cursos', employeeAllowed: true },
+  { label: 'Seguridad IT', icon: Shield, path: '/seguridad-it', employeeAllowed: true },
+  { label: 'Beneficios sociales', icon: Gift, path: '/beneficios', employeeAllowed: true },
+  { label: 'Organigrama', icon: Network, path: '/organigrama', employeeAllowed: true },
 ];
 
 export default function AppSidebar() {
