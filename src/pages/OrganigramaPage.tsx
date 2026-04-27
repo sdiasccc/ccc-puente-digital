@@ -100,11 +100,23 @@ export default function OrganigramaPage() {
   );
 
   const active = useMemo(() => {
-    // Use orgNodes that correspond to real active users (match by name, case-insensitive)
-    return orgNodes.filter((n) => {
+    // Real orgNodes that match active users
+    const matched = orgNodes.filter((n) => {
       if (n.archived) return false;
       return realActiveUsers.some((u) => u.name.toLowerCase() === n.name.toLowerCase());
     });
+    // Synthesize nodes for active users not yet in the org chart
+    const synthesized: OrgNode[] = realActiveUsers
+      .filter((u) => !matched.some((n) => n.name.toLowerCase() === u.name.toLowerCase()))
+      .map((u) => ({
+        id: `synth-${u.id}`,
+        name: u.name,
+        role: u.cargo || u.role,
+        department: u.department,
+        office: u.office,
+        avatar: u.avatar,
+      }));
+    return [...matched, ...synthesized];
   }, [orgNodes, realActiveUsers]);
 
   const [search, setSearch] = useState('');
