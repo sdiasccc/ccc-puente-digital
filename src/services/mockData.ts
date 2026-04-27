@@ -50,18 +50,7 @@ export const mockBenefits: Benefit[] = [
   { id: '4', title: 'Retribución flexible', description: 'Ticket restaurante, transporte, guardería y seguro médico.', icon: 'Gift' },
 ];
 
-export const mockOrgNodes: OrgNode[] = [
-  { id: '1', name: 'Ana Martínez', role: 'CEO', department: 'Dirección general', office: 'Madrid' },
-  { id: '2', name: 'Pedro López', role: 'Director de tecnología', department: 'Tecnología', office: 'Madrid', parentId: '1' },
-  { id: '3', name: 'María Fernández', role: 'Directora de RRHH', department: 'RRHH', office: 'Madrid', parentId: '1' },
-  { id: '4', name: 'Luis Moreno', role: 'Director comercial', department: 'Comercial', office: 'Barcelona', parentId: '1' },
-  { id: '5', name: 'Carlos García', role: 'Lead developer', department: 'Tecnología', office: 'Madrid', parentId: '2' },
-  { id: '6', name: 'Laura Sánchez', role: 'Diseñadora UX', department: 'Tecnología', office: 'Barcelona', parentId: '2' },
-  { id: '7', name: 'Javier Ruiz', role: 'Técnico de RRHH', department: 'RRHH', office: 'Madrid', parentId: '3' },
-  { id: '8', name: 'Elena Torres', role: 'Formación', department: 'RRHH', office: 'Sevilla', parentId: '3' },
-  { id: '9', name: 'Sara Jiménez', role: 'Account manager', department: 'Comercial', office: 'Barcelona', parentId: '4' },
-  { id: '10', name: 'Diego Navarro', role: 'Sales rep', department: 'Comercial', office: 'Valencia', parentId: '4' },
-];
+export const mockOrgNodes: OrgNode[] = [];
 
 export const mockHighlights: Highlight[] = [
   { id: '1', title: 'Nueva política de teletrabajo', description: 'Se amplía a 3 días semanales desde abril', link: '/comunicaciones', icon: 'Megaphone', order: 1, active: true },
