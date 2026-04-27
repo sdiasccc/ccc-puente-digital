@@ -68,8 +68,8 @@ export default function PayfitPage() {
           <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
             <iframe
               className="absolute inset-0 w-full h-full"
-              src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-              title="Iniciación a Payfit"
+              src="https://www.youtube.com/embed/BHACKCNDMW8"
+              title="Naturaleza"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
             />
