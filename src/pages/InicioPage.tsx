@@ -100,13 +100,15 @@ export default function InicioPage() {
           height={640}
           className="w-full h-48 sm:h-56 object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-secondary/60 via-secondary/20 to-background" />
+        {/* Dark overlay for contrast */}
+        <div className="absolute inset-0 bg-black/50" />
+        <div className="absolute inset-0 bg-gradient-to-b from-secondary/40 via-secondary/20 to-background" />
         <div className="absolute inset-0 flex flex-col justify-center px-6 sm:px-10">
           <h1 className="text-2xl sm:text-3xl font-bold text-white drop-shadow">
             Bienvenido/a, {currentUser.name.split(' ')[0]}
           </h1>
-          <p className="text-sm sm:text-base text-white/90 mt-1 drop-shadow max-w-xl">
-            Accede a tus comunicados, formación y recursos de la intranet CCC.
+          <p className="text-sm sm:text-base text-white mt-1 drop-shadow max-w-xl">
+            Accede a todos los beneficios que te proporcionamos como empleado en CCC.
           </p>
         </div>
       </section>
