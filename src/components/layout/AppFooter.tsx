@@ -32,8 +32,8 @@ export default function AppFooter() {
                 </Link>
               </li>
               <li>
-                <Link to="/seguridad-it" className="text-sidebar-foreground/70 hover:text-primary transition-colors">
-                  Seguridad IT
+                <Link to="/beneficios" className="text-sidebar-foreground/70 hover:text-primary transition-colors">
+                  Beneficios sociales
                 </Link>
               </li>
             </ul>

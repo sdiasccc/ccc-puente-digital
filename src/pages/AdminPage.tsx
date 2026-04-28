@@ -59,18 +59,18 @@ export default function AdminPage() {
           <button
             type="button"
             onClick={() => scrollTabs('left')}
-            className="admin-hover-target absolute left-0 top-1/2 -translate-y-1/2 z-10 rounded-full bg-card border border-border p-1.5 card-shadow hover:bg-muted transition-colors"
+            className="admin-hover-target absolute left-0 top-1/2 -translate-y-1/2 z-10 rounded-md p-1.5 hover:bg-muted transition-colors"
             aria-label="Anterior"
           >
-            <ChevronLeft className="h-4 w-4 text-foreground" />
+            <ChevronLeft className="h-5 w-5 text-foreground" />
           </button>
           <button
             type="button"
             onClick={() => scrollTabs('right')}
-            className="admin-hover-target absolute right-0 top-1/2 -translate-y-1/2 z-10 rounded-full bg-card border border-border p-1.5 card-shadow hover:bg-muted transition-colors"
+            className="admin-hover-target absolute right-0 top-1/2 -translate-y-1/2 z-10 rounded-md p-1.5 hover:bg-muted transition-colors"
             aria-label="Siguiente"
           >
-            <ChevronRight className="h-4 w-4 text-foreground" />
+            <ChevronRight className="h-5 w-5 text-foreground" />
           </button>
           <div
             ref={tabsScrollRef}

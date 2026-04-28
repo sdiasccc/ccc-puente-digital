@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '@/stores/useAppStore';
-import { ChevronLeft, ChevronRight, Clock, Layers, BookOpen, Shield, Gift, Network, ArrowRight, FileText, ExternalLink } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Clock, Layers, BookOpen, Gift, Network, ArrowRight, FileText, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import WelcomeModal from '@/components/shared/WelcomeModal';
 import ProfileSetupModal from '@/components/shared/ProfileSetupModal';
@@ -38,19 +38,10 @@ const quickAccessItems = [
     icon: BookOpen,
   },
   {
-    id: 4,
-    title: 'Seguridad IT',
-    subtitle: 'Soporte y recursos',
-    items: ['Preguntas frecuentes', 'Solicitar soporte', 'Reportar incidencia'],
-    cta: 'Explorar más',
-    path: '/seguridad-it',
-    icon: Shield,
-  },
-  {
     id: 5,
     title: 'Beneficios sociales',
     subtitle: 'Descubre tus ventajas',
-    items: ['Seguro médico', 'Descuentos formación', 'Programas educativos'],
+    items: ['Descuentos en formación', 'Club de descuentos'],
     cta: 'Explorar más',
     path: '/beneficios',
     icon: Gift,
@@ -169,9 +160,9 @@ export default function InicioPage() {
       {/* Documentación relevante */}
       <section>
         <h2 className="text-xl font-semibold text-secondary mb-4">Documentación relevante</h2>
-        <div className="max-w-2xl mx-auto space-y-4">
+        <div className="space-y-4">
           {relevantDocs.map((doc) => (
-            <div key={doc.id} className="rounded-xl border border-border bg-card p-6 card-shadow flex items-center gap-4 transition-all">
+            <div key={doc.id} className="rounded-xl border border-border bg-card p-6 card-shadow flex items-center gap-4 transition-all hover:-translate-y-0.5 hover:shadow-md">
               <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
                 <FileText className="h-5 w-5" />
               </div>
@@ -219,7 +210,7 @@ export default function InicioPage() {
             {quickAccessItems.map((item, idx) => (
               <div
                 key={item.id}
-                className="rounded-2xl p-6 text-white flex-shrink-0 flex flex-col justify-between min-h-[260px]"
+                className="rounded-2xl p-6 text-white flex-shrink-0 flex flex-col justify-between min-h-[260px] transition-all duration-200 hover:-translate-y-1 hover:shadow-lg"
                 style={{ width: 'calc((100% - 2rem) / 3)', backgroundColor: cardColors[idx] }}
               >
                 <div>

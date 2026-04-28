@@ -44,10 +44,23 @@ export const mockFAQs: FAQItem[] = [
 ];
 
 export const mockBenefits: Benefit[] = [
-  { id: '1', title: 'Seguro médico privado', description: 'Cobertura médica completa con posibilidad de incluir familiares.', icon: 'Heart' },
-  { id: '2', title: 'Formación continua', description: 'Descuentos de hasta el 50% en másteres y certificaciones.', icon: 'GraduationCap' },
-  { id: '3', title: 'Programa de bienestar', description: 'Acceso a gimnasio, mindfulness y programa de salud mental.', icon: 'Dumbbell' },
-  { id: '4', title: 'Retribución flexible', description: 'Ticket restaurante, transporte, guardería y seguro médico.', icon: 'Gift' },
+  {
+    id: 'b-formacion',
+    title: 'Descuentos en formación',
+    description: 'Accede a descuentos exclusivos en programas de formación, másteres y certificaciones profesionales con nuestras instituciones colaboradoras.',
+    icon: 'GraduationCap',
+    email: 'formacion@cursosccc.com',
+    image: 'https://images.unsplash.com/photo-1513258496099-48168024aec0?w=600&q=80',
+  },
+  {
+    id: 'b-club',
+    title: 'Club de descuentos',
+    description: 'Accede al portal exclusivo de Club de Beneficios CCC con descuentos en ocio, viajes, tecnología, salud y mucho más.',
+    icon: 'Tag',
+    email: 'club@cursosccc.com',
+    image: 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=600&q=80',
+    link: 'https://ccc.clubdebenefits.com/pages/index',
+  },
 ];
 
 export const mockOrgNodes: OrgNode[] = [];

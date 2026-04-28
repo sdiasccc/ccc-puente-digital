@@ -3,7 +3,7 @@ import { useAppStore } from '@/stores/useAppStore';
 import PageHeader from '@/components/shared/PageHeader';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { MapPin, Search, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Lock } from 'lucide-react';
+import { MapPin, Search, ChevronLeft, ChevronRight, ChevronUp, ChevronDown } from 'lucide-react';
 import type { OrgNode } from '@/types';
 
 function buildTree(nodes: OrgNode[]): (OrgNode & { children: any[] })[] {
@@ -171,11 +171,6 @@ export default function OrganigramaPage() {
     <div className="space-y-6">
       <PageHeader title="Organigrama" description="Estructura organizativa de CCC" />
 
-      <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/40 p-3 text-sm text-muted-foreground">
-        <Lock className="h-4 w-4" />
-        Vista <strong className="text-foreground">solo lectura</strong>. La edición de la estructura se realiza desde Administración → Organigrama.
-      </div>
-
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -189,7 +184,7 @@ export default function OrganigramaPage() {
         <div className="flex justify-center">
           <button
             onClick={() => navigate('up')}
-            className="rounded-full bg-card border border-border p-2 card-shadow hover:bg-muted transition-colors"
+            className="rounded-md p-1.5 hover:bg-muted transition-colors"
             title="Arriba"
           >
             <ChevronUp className="h-5 w-5 text-foreground" />
@@ -198,7 +193,7 @@ export default function OrganigramaPage() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => navigate('left')}
-            className="flex-shrink-0 rounded-full bg-card border border-border p-2 card-shadow hover:bg-muted transition-colors"
+            className="flex-shrink-0 rounded-md p-1.5 hover:bg-muted transition-colors"
             title="Izquierda"
           >
             <ChevronLeft className="h-5 w-5 text-foreground" />
@@ -227,7 +222,7 @@ export default function OrganigramaPage() {
           </div>
           <button
             onClick={() => navigate('right')}
-            className="flex-shrink-0 rounded-full bg-card border border-border p-2 card-shadow hover:bg-muted transition-colors"
+            className="flex-shrink-0 rounded-md p-1.5 hover:bg-muted transition-colors"
             title="Derecha"
           >
             <ChevronRight className="h-5 w-5 text-foreground" />
@@ -236,7 +231,7 @@ export default function OrganigramaPage() {
         <div className="flex justify-center">
           <button
             onClick={() => navigate('down')}
-            className="rounded-full bg-card border border-border p-2 card-shadow hover:bg-muted transition-colors"
+            className="rounded-md p-1.5 hover:bg-muted transition-colors"
             title="Abajo"
           >
             <ChevronDown className="h-5 w-5 text-foreground" />

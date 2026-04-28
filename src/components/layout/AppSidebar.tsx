@@ -5,7 +5,6 @@ import {
   Clock,
   Megaphone,
   GraduationCap,
-  Shield,
   Gift,
   Network,
 } from 'lucide-react';
@@ -16,7 +15,6 @@ const allNavItems = [
   { label: 'Payfit', icon: Clock, path: '/payfit', employeeAllowed: true },
   { label: 'Comunicaciones', icon: Megaphone, path: '/comunicaciones', employeeAllowed: true },
   { label: 'Cursos obligatorios', icon: GraduationCap, path: '/cursos', employeeAllowed: true },
-  { label: 'Seguridad IT', icon: Shield, path: '/seguridad-it', employeeAllowed: true },
   { label: 'Beneficios sociales', icon: Gift, path: '/beneficios', employeeAllowed: true },
   { label: 'Organigrama', icon: Network, path: '/organigrama', employeeAllowed: true },
 ];
