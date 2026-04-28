@@ -10,10 +10,8 @@ import InicioPage from "@/pages/InicioPage";
 import PayfitPage from "@/pages/PayfitPage";
 import ComunicacionesPage from "@/pages/ComunicacionesPage";
 import CursosPage from "@/pages/CursosPage";
-import SeguridadITPage from "@/pages/SeguridadITPage";
 
 import BeneficiosPage from "@/pages/BeneficiosPage";
-import SolicitudBeneficioPage from "@/pages/SolicitudBeneficioPage";
 import OrganigramaPage from "@/pages/OrganigramaPage";
 import PerfilPage from "@/pages/PerfilPage";
 import AdminPage from "@/pages/AdminPage";
@@ -46,9 +44,7 @@ const App = () => (
             <Route path="/payfit" element={<PayfitPage />} />
             <Route path="/comunicaciones" element={<ComunicacionesPage />} />
             <Route path="/cursos" element={<CursosPage />} />
-            <Route path="/seguridad-it" element={<SeguridadITPage />} />
             <Route path="/beneficios" element={<BeneficiosPage />} />
-            <Route path="/beneficios/solicitud" element={<SolicitudBeneficioPage />} />
             <Route path="/organigrama" element={<OrganigramaPage />} />
             <Route path="/perfil" element={<PerfilPage />} />
             <Route path="/admin" element={<NonEmployeeGuard><AdminPage /></NonEmployeeGuard>} />
