@@ -8,16 +8,50 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'sonner';
 import { AlertCircle, Clock } from 'lucide-react';
 import { isValidCccEmail, EMAIL_VALIDATION_MESSAGE } from '@/lib/emailValidation';
+import { loginWithGoogle, UNAUTHORIZED_DOMAIN_MESSAGE } from '@/services/authService';
 
 const CCC_SEDES = ['Madrid', 'Barcelona', 'Sevilla', 'Valencia', 'Bilbao'];
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { login, register, users } = useAppStore();
+  const { login, register, users, loginWithEmail } = useAppStore();
   const [isRegister, setIsRegister] = useState(false);
   const [form, setForm] = useState({ name: '', email: '', password: '', cargo: '', office: '' });
   const [pendingMessage, setPendingMessage] = useState(false);
   const [registeredMessage, setRegisteredMessage] = useState(false);
+  const [googleError, setGoogleError] = useState<string | null>(null);
+  const [googleLoading, setGoogleLoading] = useState(false);
+
+  const handleGoogleLogin = async () => {
+    setGoogleError(null);
+    setPendingMessage(false);
+    setRegisteredMessage(false);
+    setGoogleLoading(true);
+    try {
+      const result = await loginWithGoogle();
+      if (result.ok === false) {
+        if (result.error === 'unauthorized_domain') {
+          setGoogleError(UNAUTHORIZED_DOMAIN_MESSAGE);
+        } else {
+          toast.error('No se ha podido completar el inicio de sesión con Google');
+        }
+        return;
+      }
+      const status = loginWithEmail(result.profile.email);
+      if (status === 'success') {
+        toast.success('Sesión iniciada con Google');
+        navigate('/');
+      } else if (status === 'pending') {
+        setPendingMessage(true);
+      } else if (status === 'not_found') {
+        setGoogleError('Esta cuenta de Google no está registrada en la intranet.');
+      } else {
+        setGoogleError('Tu cuenta está desactivada. Contacta con un administrador.');
+      }
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -92,6 +126,35 @@ export default function LoginPage() {
               </div>
             </div>
           )}
+
+          {googleError && (
+            <div className="flex items-start gap-3 rounded-lg bg-destructive/10 border border-destructive/30 p-4 mb-4">
+              <AlertCircle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-destructive">{googleError}</p>
+            </div>
+          )}
+
+          <button
+            type="button"
+            onClick={handleGoogleLogin}
+            disabled={googleLoading}
+            className="w-full inline-flex items-center justify-center gap-3 rounded-md border border-input bg-background px-4 py-2.5 text-sm font-medium text-foreground hover:bg-accent transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            <svg className="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.2-2.27H12v4.51h6.44c-.28 1.48-1.12 2.73-2.38 3.57v2.97h3.85c2.25-2.08 3.58-5.14 3.58-8.78z"/>
+              <path fill="#34A853" d="M12 24c3.24 0 5.95-1.07 7.93-2.91l-3.85-2.97c-1.07.72-2.44 1.15-4.08 1.15-3.13 0-5.79-2.11-6.74-4.96H1.27v3.09C3.25 21.3 7.31 24 12 24z"/>
+              <path fill="#FBBC05" d="M5.26 14.31c-.24-.72-.38-1.49-.38-2.31s.14-1.59.38-2.31V6.6H1.27A11.99 11.99 0 0 0 0 12c0 1.94.47 3.77 1.27 5.4l3.99-3.09z"/>
+              <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.25 2.7 1.27 6.6l3.99 3.09C6.21 6.86 8.87 4.75 12 4.75z"/>
+            </svg>
+            {googleLoading ? 'Conectando...' : 'Continuar con Google'}
+          </button>
+
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border" /></div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card px-2 text-muted-foreground">o con tu correo</span>
+            </div>
+          </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {isRegister && (

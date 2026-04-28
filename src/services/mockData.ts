@@ -58,7 +58,7 @@ export const mockBenefits: Benefit[] = [
     description: 'Accede al portal exclusivo de Club de Beneficios CCC con descuentos en ocio, viajes, tecnología, salud y mucho más.',
     icon: 'Tag',
     email: 'club@cursosccc.com',
-    image: 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=600&q=80',
+    image: 'https://images.unsplash.com/photo-1556742111-a301076d9d18?w=600&q=80',
     link: 'https://ccc.clubdebenefits.com/pages/index',
   },
 ];

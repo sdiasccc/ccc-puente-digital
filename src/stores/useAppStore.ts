@@ -20,6 +20,7 @@ interface AppState {
   isAuthenticated: boolean;
   currentUser: User;
   login: (email: string, password: string) => boolean;
+  loginWithEmail: (email: string) => 'success' | 'not_found' | 'pending' | 'inactive';
   register: (name: string, email: string, password: string, cargo?: string, office?: string) => 'success' | 'exists' | 'error';
   logout: () => void;
   activateUser: (id: string) => void;
@@ -113,6 +114,14 @@ export const useAppStore = create<AppState>()(
         if (!user.active) return false;
         set({ isAuthenticated: true, currentUser: user });
         return true;
+      },
+      loginWithEmail: (email) => {
+        const user = get().users.find((u) => u.email.toLowerCase() === email.toLowerCase());
+        if (!user) return 'not_found';
+        if (user.status === 'pendiente') return 'pending';
+        if (!user.active) return 'inactive';
+        set({ isAuthenticated: true, currentUser: user });
+        return 'success';
       },
       register: (name, email, password, cargo?, office?) => {
         const exists = get().users.some((u) => u.email === email);
