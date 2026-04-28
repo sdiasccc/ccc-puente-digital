@@ -29,7 +29,7 @@ export default function LoginPage() {
     setGoogleLoading(true);
     try {
       const result = await loginWithGoogle();
-      if (!result.ok) {
+      if (result.ok === false) {
         if (result.error === 'unauthorized_domain') {
           setGoogleError(UNAUTHORIZED_DOMAIN_MESSAGE);
         } else {
