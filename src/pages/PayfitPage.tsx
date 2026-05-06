@@ -66,12 +66,11 @@ export default function PayfitPage() {
         </h2>
         <div className="mx-auto max-w-3xl rounded-2xl overflow-hidden border border-border bg-secondary/5">
           <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
-            <iframe
+            <video
               className="absolute inset-0 w-full h-full"
-              src="https://www.youtube.com/embed/BHACKCNDMW8"
-              title="Naturaleza"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
+              src="/videos/payfit.mp4"
+              controls
+              playsInline
             />
           </div>
         </div>
